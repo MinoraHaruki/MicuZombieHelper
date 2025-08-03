@@ -1,5 +1,6 @@
 import Settings from "../config";
 
+let in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
 let image
 let imageWidth
 let imageHeight
@@ -35,13 +36,13 @@ register("command", () => {
     if (timeoutId) clearTimeout(timeoutId)
     timeoutId = setTimeout(() => {
         shouldDrawImage = false
-    }, 4000)
+    }, 10000)
 }).setName("micutestvictory");
 
 register("chat", (chat, event) => {
   chat = ChatLib.getChatMessage(event).removeFormatting();
   chat = String(chat).toLowerCase();
-      if (chat.includes("survived!") && Settings.victory_dance) {
+      if (chat.includes("survived!") && Settings.victory_dance && in_zombies) {
         shouldDrawImage = true
         new Sound({ source: "victory.ogg" })?.play();
         if (timeoutId) clearTimeout(timeoutId)

@@ -53,20 +53,6 @@ class Settings {
     lrod_alert = true;
 
     @SwitchProperty({
-        name: "Cornering Waypoints",
-        description: "Showing corner spot for revive cycle (not working now.)",
-        category: "Alien Arcadium",
-    })
-    corner_spot = false;
-
-    @SwitchProperty({
-        name: "Cornering Spot In Party Chat",
-        description: "Tell player corner spot for the next round (not working now.)",
-        category: "Alien Arcadium",
-    })
-    corner_spot_chat = false;
-
-    @SwitchProperty({
         name: "Fully Repaired Alert",
         description: "Alerts you when windows is fully repaired",
         category: "General",
@@ -153,9 +139,73 @@ class Settings {
         RickRoll()
     }
 
+    @SwitchProperty({
+        name: "Hide Window Repair Messages",
+        description: "",
+        category: "Messages",
+    })
+    hide_windows_chat = false;
+
+    @SwitchProperty({
+        name: "Hide Revive Messages",
+        description: "",
+        category: "Messages",
+    })
+    hide_revive_chat = false;
+
+    @SwitchProperty({
+        name: "Hide Target Hit Messages",
+        description: "",
+        category: "Messages",
+    })
+    hide_targethit_chat = false;
+
+    @SwitchProperty({
+        name: "Hide Player Leave/Rejoin Messages",
+        description: "",
+        category: "Messages",
+    })
+    hide_leaverejoin_chat = false;
+
+    @SwitchProperty({
+        name: "Hide Power Up Pickup Messages",
+        description: "",
+        category: "Messages",
+    })
+    hide_powerup_chat = false;
+
+    @SwitchProperty({
+        name: "Hide Gold Received Messages",
+        description: "",
+        category: "Messages",
+    })
+    hide_gold_chat = false;
+
+    @SwitchProperty({
+        name: "Hide Open Area Messages",
+        description: "",
+        category: "Messages",
+    })
+    hide_openarea_chat = false;
+
+    @SwitchProperty({
+        name: "Hide Lucky Chest Messages",
+        description: "",
+        category: "Messages",
+    })
+    hide_luckychest_chat = false;
+
+    @SwitchProperty({
+        name: "Hide Knockdown Messages",
+        description: "",
+        category: "Messages",
+    })
+    hide_knockdown_chat = false;
+
     constructor() {
         this.initialize(this);
         this.setCategoryDescription('General', 'Settings for MicuZombieHelper');
+        this.setCategoryDescription('Messages', 'Hide Messages (badly coded :sob:)')
         this.setSubcategoryDescription('General', 'Fun', 'frfr');
         this.setCategoryDescription('Overlay', 'Overlay Settings');
         this.setCategoryDescription('Alien Arcadium', 'Alien Arcadium Utilities');

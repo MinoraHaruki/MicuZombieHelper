@@ -1,5 +1,6 @@
 import Settings from "../config";
 
+let in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
 let image
 let imageWidth
 let imageHeight
@@ -25,7 +26,7 @@ register("renderOverlay", () => {
 () => Settings.puncher_alert && image
 
 register("chat", () => {
-    if (Settings.puncher_alert) {
+    if (Settings.puncher_alert && in_zombies) {
         shouldDrawImage = true;
         new Sound({ source: "puncher.ogg" })?.play();
         if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] FUDGE! Rolled The Puncher AHHHHHHHHHHHHHHHHHHHH`) }
@@ -37,7 +38,7 @@ register("chat", () => {
 }).setCriteria("You found The Puncher in the Lucky Chest! You have 10s to claim it before it disappears!");
 
 register("chat", (name) => {
-    if (Settings.puncher_alert) {
+    if (Settings.puncher_alert && in_zombies) {
         new Sound({ source: "puncher.ogg" })?.play();
         () => Settings.puncher_alert
         if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] WASTED. ${name} rolled The Puncher!`) }

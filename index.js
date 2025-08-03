@@ -1,6 +1,8 @@
 import Settings from "./config";
+import { Color } from "Vigilance";
 import "./features/victory"
 import "./features/puncher"
+import "./features/hidemessages"
 
 register("command", () => Settings.openGUI()).setName("micu");
 
@@ -29,9 +31,15 @@ let insta_kill = 0
 let max_ammo = 0
 let shopping_spree = 0
 
+let poweruptext_update
+let poweruptext
+let textinsta
+let textspree
+let textmax
+
 let max_pat = 0;
-let max_pat1 = [2, 5, 8, 12, 16, 21, 26, 31, 36, 41, 46, 51, 61, 66, 71, 76, 81, 86, 91, 96, 101];
-let max_pat2 = [3, 6, 9, 13, 17, 22, 27, 32, 37, 42, 47, 52, 62, 67, 72, 77, 82, 87, 92, 97, 102];
+let max_pat1 = [2, 5, 8, 12, 16, 21, 26, 31, 36, 41, 46, 51, 61, 66, 71, 76, 81, 86, 91, 96];
+let max_pat2 = [3, 6, 9, 13, 17, 22, 27, 32, 37, 42, 47, 52, 62, 67, 72, 77, 82, 87, 92, 97];
 
 let insta_pat = 0;
 let insta_pat1 = [2, 5, 8, 11, 14, 17, 20, 23];
@@ -47,10 +55,10 @@ let grow_round = [18, 23, 26, 29, 31, 33, 34, 39, 43, 47, 52];
 let round_update = 0;
 let in_zombies = false;
 let infoed = false;
-let map = "Looking for start...";
-let round = "Looking for start...";
-let strat = "Looking for start...";
-let strat_next = "Looking for start...";
+let map = "Loading...";
+let round = "Loading...";
+let strat = "Loading...";
+let strat_next = "Loading...";
 let round_in_int = 0;
 
 let show_lrod_alert = false;
@@ -64,17 +72,17 @@ let zombiesnearby = new Text('Mobs Nearby!').setScale(4).setShadow(true).setAlig
 let shootT = new Text('Shoot Slimes Now!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
 
 let grow_round_strat = {
-  18: "Please dont shoot slime until i call (Spot: Chest Corner)",
-  23: "Please dont shoot slime until i call (Spot: Chest Corner)",
-  26: "Please dont shoot slime until i call (Spot: Chest Corner or Entrance Corner)",
-  29: "Please dont shoot slime until i call (Spot: Perk Corner)",
-  31: "Please dont shoot slime until i call (Spot: Perk Corner)",
-  33: "Please dont shoot slime until i call (Spot: Perk Corner)",
-  34: "Please dont shoot slime until i call (Spot: Perk Corner)",
-  39: "Start shooting when Giant gets close (Spot: Chest Corner)",
-  43: "Start shooting when Giant gets close (Spot: Chest Corner)",
-  47: "Start shooting when Giant gets close or when slimes are fully grown (Spot: Chest Corner)",
-  52: "Final one! Start shooting when Giant gets close (Spot: Chest Corner)",
+  18: "Please dont shoot slime until i call (Revive Cycle Spot: Chest Corner)",
+  23: "Please dont shoot slime until i call (Revive Cycle Spot: Chest Corner)",
+  26: "Please dont shoot slime until i call (Revive Cycle Spot: Chest Corner or Entrance Corner)",
+  29: "Please dont shoot slime until i call (Revive Cycle Spot: Perk Corner)",
+  31: "Please dont shoot slime until i call (Revive Cycle Spot: Perk Corner or Chest Corner)",
+  33: "Please dont shoot slime until i call (Revive Cycle Spot: Perk Corner or Chest Corner)",
+  34: "Please dont shoot slime until i call (Revive Cycle Spot: Perk Corner or Chest Corner)",
+  39: "Start shooting when Giant gets close (Revive Cycle Spot: Chest Corner)",
+  43: "Start shooting when Giant gets close (Revive Cycle Spot: Chest Corner)",
+  47: "Start shooting when Giant gets close or when slimes are fully grown (Revive Cycle Spot: Chest Corner)",
+  52: "Final one! Start shooting when Giant gets close (Revive Cycle Spot: Chest Corner)",
 }
 
 let strategies = {
@@ -285,46 +293,61 @@ register("step", () => {
       }
     }
     infoed = true;
-  }
-  if (infoed && !in_zombies) {
-    infoed = false;
-  }
+  } if (infoed && !in_zombies) { infoed = false; }
+
+  poweruptext_update = "";
+  textinsta = `&cInsta&r: ${insta_kill} `
+  textspree = `&5Spree&r: ${shopping_spree} `
+  textmax = `&9Max&r: ${max_ammo} `
 
   if (round_update != String(Scoreboard.getLinesByScore(13))) {
     round_update = String(Scoreboard.getLinesByScore(13))
     let round_update_int = parseInt(round_update.removeFormatting().replace("[Round ", "").replace("]", ""))
     ChatLib.chat(round_update.replace("[", "").replace("]", ""))
-    if (Settings.notify_next_power_up && round_update.includes("Round") && map === "Alien Arcadium") {
-      if (max_ammo === 0 && insta_kill === 0 && shopping_spree === 0) { ChatLib.chat(`&3[&bMicu&3]&r No power up data yet.`) } 
-      else if (insta_kill === 23 && round_update_int >= 23 || insta_kill === 21 && round_update_int >= 21 || insta_kill === 0) {
-        ChatLib.chat(`&3[&bMicu&3]&r Next power up round: &9Max&r: ${max_ammo} | &5Spree&r: ${shopping_spree}`)
-        if (Settings.notify_next_power_up_chat) { ChatLib.command(`pc [Micu] Next power up round: Max: ${max_ammo} | Spree: ${shopping_spree}`) }
-      } else {
-        ChatLib.chat(`&3[&bMicu&3]&r Next power up round: &9Max&r: ${max_ammo} | &cInsta&r: ${insta_kill} | &5Spree&r: ${shopping_spree}`)
-        if (Settings.notify_next_power_up_chat) { ChatLib.command(`pc [Micu] Next power up round: Max: ${max_ammo} | Insta: ${insta_kill} | Spree: ${shopping_spree}`) }
+      if (Settings.notify_next_power_up && round_update.includes("Round") && map === "Alien Arcadium") {
+        if (max_ammo === 0 && insta_kill === 0 && shopping_spree === 0) { ChatLib.chat(`&3[&bMicu&3]&r No power up data yet.`) } 
+        else if (round_in_int > 97 && max_ammo === 97 || round_in_int > 96 && max_ammo === 96) {
+          ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the Alien Arcadium!`)
+        } else {
+          ChatLib.chat(`&3[&bMicu&3]&r Next power up round: ${poweruptext}`)
+          if (Settings.notify_next_power_up_chat) { ChatLib.command(`pc [Micu] Next power up round: ${poweruptext.removeFormatting()}`) }
+        }
       }
-    }
     if (Settings.notify_grow && map === "Alien Arcadium") {
     grow_round.forEach((gr) => {
         if (round_update_int === gr) {
           ChatLib.chat("&3[&bMicu&3]&r&a Grow Round Detected!")
           if (Settings.notify_grow_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Grow Round! ${grow_round_strat[gr]}`) }, 1000) }
-          if (gr === 18 || gr === 23 || gr === 26 || gr === 29 || gr === 31 || gr === 33 || gr === 34 || gr === 47) {
+          if (gr === 18 || gr === 23 || gr === 26 || gr === 29 || gr === 31 || gr === 33 || gr === 34) {
             setTimeout(() => {
                 TextTMacro()
                 ChatLib.chat("&3[&bMicu&3]&r&e Shoot Slimes Now!")
                 if (Settings.notify_grow_chat) { ChatLib.command('pc [Micu] Shoot Slimes Now!') }
             }, 39000);
+          } else if (gr === 47) {
+            setTimeout(() => {
+                TextTMacro()
+                ChatLib.chat("&3[&bMicu&3]&r&e Shoot Slimes Now!")
+                if (Settings.notify_grow_chat) { ChatLib.command('pc [Micu] Shoot Slimes Now!') }
+            }, 29000);
           }
         }
       })
     }
   }
+
+  if (poweruptext != poweruptext_update) { poweruptext = poweruptext_update }  
+  if (insta_kill !== 0) { poweruptext += textinsta } 
+  else if (insta_kill === 21 && round_update_int > 21 || insta_kill === 23 && round_update_int > 23) { poweruptext -= textinsta }
+  if (max_ammo !== 0) { poweruptext += textmax }
+  else if (max_ammo === 96 && round_update_int > 96 || max_ammo === 97 && round_update_int > 97) { poweruptext -= textmax }
+  if (shopping_spree !== 0) { poweruptext += textspree }
+  else if (shopping_spree === 95 && round_update_int > 95 || shopping_spree === 96 && round_update_int > 96 || shopping_spree === 97 && round_update_int > 97) { poweruptext -= textspree }
 }).setFps(1);
 
 register("step", () => {
-  if (!in_zombies) {return;}
-  round = String(Scoreboard.getLinesByScore(13)).removeFormatting().replace("[]", "Looking for start...");
+  if (!in_zombies) { round = "[Round 0]"; return; }
+  round = String(Scoreboard.getLinesByScore(13)).removeFormatting().replace("[]", "[Round 0]");
   if (round.replace("[", "").replace("]", "").toLowerCase().includes("round")) {
     round_in_int = parseInt(round.replace("[Round ", "").replace("]", ""))
   }
@@ -439,14 +462,15 @@ register("chat", fixedwindows).setCriteria("You have fully repaired this window!
 
 register("chat", zomnearby).setCriteria("You can't repair windows while enemies are nearby!");
 
-// register("command", () => {
-// }).setName("micutest")
+register("command", () => {
+// test smth here
+}).setName("micutest")
 
 let alerting = false;
 register("step", () => {
     //lrod alert stuff
+  if (round_in_int === 0) {return;}
   if (Settings.lrod_alert) {
-    if (!in_zombies) {return;}
     item = Player.getInventory().getStackInSlot(4)
     if (!alerting) {
       if (String(item.getNBT().getCompoundTag("tag").getCompoundTag("display").getTagMap().get("Name")).removeFormatting().toLowerCase().includes("lightning rod skill") && String(item.getUnlocalizedName()).removeFormatting().toLowerCase().includes("blazerod")) {
@@ -608,6 +632,8 @@ register("command", (setmap) => {
   } else if (setmap == "pr") {
     map = "Prison";
     ChatLib.chat("&3[&bMicu&3]&r Set map to Prison");
+  } else {
+    ChatLib.chat("&3[&bMicu&3]&r Map: aa/de/bb/pr (only used when reload ct in the middle of the game)");
   }
 }).setName("setmap")
 

@@ -32,6 +32,17 @@
 	overlay_y = 104
 	strat = true
 
+[messages]
+	hide_revive_messages = false
+	"hide_player_leave/rejoin_messages" = false
+	hide_power_up_pickup_messages = false
+	hide_gold_received_messages = false
+	hide_knockdown_messages = false
+	hide_open_area_messages = false
+	hide_lucky_chest_messages = false
+	hide_window_repair_messages = true
+	hide_target_hit_messages = true
+
 [zombies]
 	power_up_pattern_notification = true
 	fully_repaired_alert = true
@@ -68,11 +79,11 @@
 [alien_arcadium]
 	cornering_spot_in_party_chat = false
 	cornering_waypoints = false
-	notify_grow_round_in_party_chat = true
+	notify_grow_round_in_party_chat = false
 	power_up_pattern_notification = true
 	notify_grow_round = true
 	pregame_info = false
 	notify_next_round_power_up = true
 	lightning_rod_alert = true
-	notify_next_round_power_up_in_party_chat = true
+	notify_next_round_power_up_in_party_chat = false
 

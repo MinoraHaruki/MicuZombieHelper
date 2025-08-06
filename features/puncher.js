@@ -1,11 +1,15 @@
 import Settings from "../config";
 
-let in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
+let in_zombies = false
 let image
 let imageWidth
 let imageHeight
 let shouldDrawImage = false
 let timeoutId
+
+register("step", () => {
+    in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
+}).setFps(5);
 
 try {
     image = new Image("puncher.png", "../assets/puncher.png");

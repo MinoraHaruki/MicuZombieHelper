@@ -69,7 +69,7 @@ let show_shootT_alert = false;
 let alert = new Text('Lighting Rod Ready!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.AQUA)
 let repaired = new Text('Fully Repaired!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.GREEN)
 let zombiesnearby = new Text('Mobs Nearby!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.RED)
-let shootT = new Text('Shoot Slimes Now!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
+let shootT = new Text('Shoot Now!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
 
 let grow_round_strat = {
   18: "Please dont shoot slime until i call (Revive Cycle Spot: Chest Corner)",
@@ -305,12 +305,12 @@ register("step", () => {
     let round_update_int = parseInt(round_update.removeFormatting().replace("[Round ", "").replace("]", ""))
     ChatLib.chat(round_update.replace("[", "").replace("]", ""))
       if (Settings.notify_next_power_up && round_update.includes("Round") && map === "Alien Arcadium") {
-        if (max_ammo === 0 && insta_kill === 0 && shopping_spree === 0) { ChatLib.chat(`&3[&bMicu&3]&r No power up data yet.`) } 
-        else if (round_in_int > 97 && max_ammo === 97 || round_in_int > 96 && max_ammo === 96) {
+        if (max_ammo == 0 && insta_kill == 0 && shopping_spree == 0) { ChatLib.chat(`&3[&bMicu&3]&r No power up data yet.`) } 
+        else if (round_in_int > 97 && max_ammo == 97 || round_in_int > 96 && max_ammo == 96) {
           ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the Alien Arcadium!`)
         } else {
-          ChatLib.chat(`&3[&bMicu&3]&r Next power up round: ${poweruptext}`)
-          if (Settings.notify_next_power_up_chat) { ChatLib.command(`pc [Micu] Next power up round: ${poweruptext.removeFormatting()}`) }
+          ChatLib.chat(`&3[&bMicu&3]&r Next power up round: ${poweruptext.replace("NaN", "")}`)
+          if (Settings.notify_next_power_up_chat) { ChatLib.command(`pc [Micu] Next power up round: ${poweruptext.removeFormatting().replace("NaN", "")}`) }
         }
       }
     if (Settings.notify_grow && map === "Alien Arcadium") {
@@ -321,14 +321,14 @@ register("step", () => {
           if (gr === 18 || gr === 23 || gr === 26 || gr === 29 || gr === 31 || gr === 33 || gr === 34) {
             setTimeout(() => {
                 TextTMacro()
-                ChatLib.chat("&3[&bMicu&3]&r&e Shoot Slimes Now!")
-                if (Settings.notify_grow_chat) { ChatLib.command('pc [Micu] Shoot Slimes Now!') }
+                ChatLib.chat("&3[&bMicu&3]&r&e You Can Shoot Now!")
+                if (Settings.notify_grow_chat) { ChatLib.command('pc [Micu] Shoot Now!') }
             }, 39000);
           } else if (gr === 47) {
             setTimeout(() => {
                 TextTMacro()
-                ChatLib.chat("&3[&bMicu&3]&r&e Shoot Slimes Now!")
-                if (Settings.notify_grow_chat) { ChatLib.command('pc [Micu] Shoot Slimes Now!') }
+                ChatLib.chat("&3[&bMicu&3]&r&e You Can Shoot Now!")
+                if (Settings.notify_grow_chat) { ChatLib.command('pc [Micu] Shoot Now!') }
             }, 29000);
           }
         }
@@ -337,12 +337,16 @@ register("step", () => {
   }
 
   if (poweruptext != poweruptext_update) { poweruptext = poweruptext_update }  
-  if (insta_kill !== 0) { poweruptext += textinsta } 
-  else if (insta_kill === 21 && round_update_int > 21 || insta_kill === 23 && round_update_int > 23) { poweruptext -= textinsta }
-  if (max_ammo !== 0) { poweruptext += textmax }
-  else if (max_ammo === 96 && round_update_int > 96 || max_ammo === 97 && round_update_int > 97) { poweruptext -= textmax }
-  if (shopping_spree !== 0) { poweruptext += textspree }
-  else if (shopping_spree === 95 && round_update_int > 95 || shopping_spree === 96 && round_update_int > 96 || shopping_spree === 97 && round_update_int > 97) { poweruptext -= textspree }
+
+  if (insta_kill != 0) { poweruptext += textinsta } 
+  if (insta_kill == 21 && round_in_int >= 21 || insta_kill == 23 && round_in_int >= 23 || insta_kill == 0) { poweruptext -= textinsta }
+
+  if (max_ammo != 0) { poweruptext += textmax }
+  if (max_ammo == 96 && round_in_int > 96 || max_ammo == 97 && round_in_int > 97) { poweruptext -= textmax }
+
+  if (shopping_spree != 0) { poweruptext += textspree }
+  if (shopping_spree == 95 && round_in_int > 95 || shopping_spree == 96 && round_in_int > 96 || shopping_spree == 97 && round_in_int > 97) { poweruptext -= textspree }
+
 }).setFps(1);
 
 register("step", () => {
@@ -587,6 +591,9 @@ register("command", (pattern) => {
   } else if (pattern == 2) {
     max_pat = 2;
     ChatLib.chat("&3[&bMicu&3]&r&9 Set Max Ammo pattern to 2");
+  } else if (pattern == 0) {
+    max_pat = 0;
+    ChatLib.chat("&3[&bMicu&3]&r Reset Max Ammo pattern.");
   } else {
     ChatLib.chat("&3[&bMicu&3]&r&f To specify max pattern manually, use 1 or 2 as argument. (use pattern 1 for 2, 5, 8, 12, '1s or '6s, and use pattern 2 for 3, 6, 9, 13, '2s or '7s)");
   }
@@ -599,6 +606,9 @@ register("command", (pattern) => {
   } else if (pattern == 2) {
     insta_pat = 2;
     ChatLib.chat("&3[&bMicu&3]&r&c Set Insta Kill pattern to 2");
+  } else if (pattern == 0) {
+    insta_pat = 0;
+    ChatLib.chat("&3[&bMicu&3]&r Reset Insta Kill pattern.");
   } else {
     ChatLib.chat("&3[&bMicu&3]&r&f To specify insta pattern manually, use 1 or 2 as argument. (use pattern 1 for 2, 5, 8, 11, 14, 17, 20, 23, and use pattern 2 for 3, 6, 9, 12, 15, 18, 21)");
   }
@@ -614,6 +624,9 @@ register("command", (pattern) => {
   } else if (pattern == 3) {
     ss_pat = 3;
     ChatLib.chat("&3[&bMicu&3]&r&5 Set Shopping Spree pattern to 3");
+  } else if (pattern == 0) {
+    ss_pat = 0;
+    ChatLib.chat("&3[&bMicu&3]&r Reset Shopping Spree pattern.");
   } else {
     ChatLib.chat("&3[&bMicu&3]&r&f To specify spree pattern manually, use 1 or 2 or 3 as argument. (use pattern 1 for 5, 15, 45, '5s, use pattern 2 for 6, '6s (except 56) and use pattern 3 for 7, '7s (except 57))");
   }
@@ -636,6 +649,21 @@ register("command", (setmap) => {
     ChatLib.chat("&3[&bMicu&3]&r Map: aa/de/bb/pr (only used when reload ct in the middle of the game)");
   }
 }).setName("setmap")
+
+// register("command", (debuground) => {
+//     new_ss = true;
+//     new_max = true;
+//     new_insta = true;
+//     round = `[Round ${debuground}]`;
+//     ChatLib.chat(`&3[&bMicu&3]&r Debug Round: ${debuground}`);
+//   if (debuground == 0) {
+//       new_ss = true;
+//       new_max = true;
+//       new_insta = true;
+//       round = `[Round ${debuground}]`;
+//       ChatLib.chat("&3[&bMicu&3]&r Debug Round: Reset to 0");
+//     }
+// }).setName("micuroundtest")
 
 function fixedwindows() {
   show_window_alert = true;

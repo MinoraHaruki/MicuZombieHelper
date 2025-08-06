@@ -1,6 +1,10 @@
 import Settings from "../config";
 
-let in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
+let in_zombies = false
+
+register("step", () => {
+    in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
+}).setFps(5);
 
 register("chat", (message, event) => {
     if (!in_zombies) return
@@ -35,12 +39,12 @@ register("chat", (message, event) => {
     }
     if (Settings.hide_powerup_chat) {
         if (message.includes(`activated Max Ammo!`) ||
-        message.includes(`activated Insta Kill for 10s!`) ||
-        message.includes(`activated Carpenter!`) ||
-        message.includes(`activated Bouns Gold!`) ||
-        message.includes(`activated Double Gold for 30s!`) ||
-        message.includes(`activated Shopping Spree for 20s!`) ||
-        message.includes(`The Lucky Chest is temporarily dirt cheap, Buy now!`))
+            message.includes(`activated Insta Kill for 10s!`) ||
+            message.includes(`activated Carpenter!`) ||
+            message.includes(`activated Bouns Gold!`) ||
+            message.includes(`activated Double Gold for 30s!`) ||
+            message.includes(`activated Shopping Spree for 20s!`) ||
+            message.includes(`The Lucky Chest is temporarily dirt cheap, Buy now!`))
         cancel(event)
     }
     if (Settings.hide_gold_chat) {

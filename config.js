@@ -26,7 +26,7 @@ class Settings {
 
     @SwitchProperty({
         name: "Pregame Info",
-        description: "Shows info about AA in chat when you join General",
+        description: "Shows important rules in chat when you join Alien Arcadium",
         category: "Alien Arcadium",
     })
     show_pregame_info = true;

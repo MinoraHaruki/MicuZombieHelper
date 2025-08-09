@@ -6,7 +6,7 @@ import {
     @ButtonProperty,
     Color,
 } from 'Vigilance';
-import {RickRoll, TurnOffPC, CloseGame, DisconnectFromServer, CloseCurrentGui} from "./test";
+import {RickRoll, TurnOffPC, CloseGame, DisconnectFromServer, CloseCurrentGui} from "./features/test";
 
 @Vigilant('MicuZombieHelper')
 class Settings {
@@ -32,18 +32,46 @@ class Settings {
     show_pregame_info = true;
 
     @SwitchProperty({
-        name: "Notify Grow Round",
+        name: "Notify Camp",
+        description: "Notify you when you should camp in specific round",
+        category: "Alien Arcadium",
+    })
+    next_round_camp = true;
+
+    @SwitchProperty({
+        name: "Notify Camp In Party Chat",
         description: "",
+        category: "Alien Arcadium",
+    })
+    camp_spot_chat = false;
+
+    @SwitchProperty({
+        name: "Grow Round Alert",
+        description: "Alert you when you are in specific round that need grow slimes and will alert you shoot in specific time",
         category: "Alien Arcadium",
     })
     notify_grow = true;
 
     @SwitchProperty({
-        name: "Notify Grow Round In Party Chat",
+        name: "Grow Round Alert In Party Chat",
         description: "",
         category: "Alien Arcadium",
     })
     notify_grow_chat = false;
+
+    @SwitchProperty({
+        name: "Giants Alert",
+        description: "Alerts you when first Giant wave is coming",
+        category: "Alien Arcadium",
+    })
+    giant_alert = true;
+
+    @SwitchProperty({
+        name: "Giants Alert In Party Chat",
+        description: "",
+        category: "Alien Arcadium",
+    })
+    giant_alert_chat = false;
 
     @SwitchProperty({
         name: "Lightning Rod Alert",
@@ -90,7 +118,7 @@ class Settings {
 
     @SwitchProperty({
         name: "The Puncher Alert",
-        description: "Sound effect play(you or other player) and image will appear(only you) when rolled puncher in AA",
+        description: "Sound effect play(you or other player) and image will appear(only you) when rolled puncher in AA turn off this if you don't play AA",
         category: "General",
         subcategory: "Fun",
     })

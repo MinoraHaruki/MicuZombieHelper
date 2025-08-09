@@ -3,6 +3,6 @@
   "creator": "MinoraHaruki",
   "description": "First module!",
   "requires": ["Vigilance", "PogData"],
-  "version": "0.2.7",
+  "version": "0.3.0",
   "entry": "index.js"
 }

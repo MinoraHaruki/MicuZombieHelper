@@ -1,8 +1,9 @@
 import Settings from "./config";
-import { Color } from "Vigilance";
 import "./features/victory"
 import "./features/puncher"
 import "./features/hidemessages"
+import "./features/skillreadyalert"
+import "./features/windowalert"
 
 register("command", () => Settings.openGUI()).setName("micu");
 
@@ -51,6 +52,10 @@ let ss_pat3 = [7, 17, 27, 37, 47, 67, 77, 87, 97];
 
 let grow_round = [18, 23, 26, 29, 31, 33, 34, 39, 43, 47, 52];
 
+let giant_spawn = [15, 20, 22, 24, 30, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 47, 50, 51, 52, 53, 54, 55, 58, 65, 70, 75, 80, 85, 90, 95, 100];
+
+let camp_spot = [22, 24, 27, 28, 30, 32, 36, 37, 38, 40, 41, 42, 44, 45, 46, 48, 49, 50, 51, 53, 54, 55, 58, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
+
 let round_update = 0;
 let in_zombies = false;
 let infoed = false;
@@ -60,28 +65,125 @@ let strat = "Loading...";
 let strat_next = "Loading...";
 let round_in_int = 0;
 
-let show_lrod_alert = false;
-let show_window_alert = false;
-let show_nearby_alert = false;
 let show_shootT_alert = false;
+let show_giant_alert = false;
 
-let alert = new Text('Lighting Rod Ready!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.AQUA)
-let repaired = new Text('Fully Repaired!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.GREEN)
-let zombiesnearby = new Text('Mobs Nearby!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.RED)
 let shootT = new Text('Shoot Now!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
+let GiantAlert = new Text('Giants Is Spawning Soon!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
+
+let camp_spot_location = {
+  22: "CC",
+  24: "CC",
+  27: "CC",
+  28: "CC",
+  30: "CC",
+  32: "CC",
+  36: "CC",
+  37: "CC",
+  38: "CC",
+  40: "CC",
+  41: "CC",
+  42: "CC",
+  44: "CC",
+  45: "CC",
+  46: "CC",
+  48: "CC",
+  49: "Alt",
+  50: "Ult (Safe) / CC (Faster)",
+  51: "Door (the wooden part of ferris wheel)",
+  53: "Alt / Ult",
+  54: "Alt / Ult",
+  55: "Ult",
+  58: "Alt",
+  60: "Alt / Ult",
+  61: "CC",
+  62: "Alt / CC",
+  63: "CC",
+  64: "CC / Alt / P5",
+  65: "CC / Alt",
+  66: "CC",
+  67: "CC / Ult",
+  68: "CC / P5",
+  69: "Ult",
+  70: "P5 / Ult",
+  71: "CC",
+  72: "Alt / CC",
+  73: "CC",
+  74: "CC / Alt / P5",
+  75: "CC / Alt",
+  76: "CC",
+  77: "CC / Ult",
+  78: "CC / P5",
+  79: "Ult",
+  80: "P5 / Ult",
+  81: "CC",
+  82: "Alt / CC",
+  83: "CC",
+  84: "CC / Alt / P5",
+  85: "CC / Alt",
+  86: "CC",
+  87: "CC / Ult",
+  88: "CC / P5",
+  89: "Ult",
+  90: "P5 / Ult",
+  91: "CC",
+  92: "Alt / CC",
+  93: "CC",
+  94: "CC / Alt / P5",
+  95: "CC / Alt",
+  96: "CC",
+  97: "CC / Ult",
+  98: "CC / P5",
+  99: "Ult",
+  100: "P5 / Ult",
+}
 
 let grow_round_strat = {
-  18: "Please dont shoot slime until i call (Rev Cycle Spot: CC)",
-  23: "Please dont shoot slime until i call (Rev Cycle Spot: CC)",
-  26: "Please dont shoot slime until i call (Rev Cycle Spot: CC (If x6 SS | Faster) / ENT (Safer)",
-  29: "Please dont shoot slime until i call (Rev Cycle Spot: PC)",
-  31: "Please dont shoot slime until i call (Rev Cycle Spot: PC (Safer) / CC (Faster)",
-  33: "Please dont shoot slime until i call (Rev Cycle Spot: PC (Safer) / CC (Faster)",
-  34: "Please dont shoot slime until i call (Rev Cycle Spot: PC (Safer) / CC (Faster)",
-  39: "Start shooting when Giant gets close (Rev Cycle Spot: CC)",
-  43: "Start shooting when Giant gets close (Rev Cycle Spot: CC)",
-  47: "Start shooting when Giant gets close or when slimes are fully grown (Rev Cycle Spot: CC)",
-  52: "Final one! Start shooting when Giant gets close (Rev Cycle Spot: CC)",
+  18: "Please don't shoot slime until i call. (Rev Cycle Spot: CC)",
+  23: "Please don't shoot slime until i call. (Rev Cycle Spot: CC)",
+  26: "Please don't shoot slime until i call. (Rev Cycle Spot: CC (If x6 SS) / ENT",
+  29: "Please don't shoot slime until i call. (Rev Cycle Spot: PC)",
+  31: "Please don't shoot slime until i call. (Rev Cycle Spot: PC / CC)",
+  33: "Please don't shoot slime until i call. (Rev Cycle Spot: PC / CC)",
+  34: "Please don't shoot slime until i call. (Rev Cycle Spot: PC / CC)",
+  39: "Start shooting when Giant gets close. (Rev Cycle Spot: CC)",
+  43: "Start shooting when Giant gets close. (Rev Cycle Spot: CC)",
+  47: "Start shooting when Giant gets close or when slimes are fully grown. (Rev Cycle Spot: CC)",
+  52: "Final one! Start shooting when Giant gets close. (Rev Cycle Spot: CC)",
+}
+
+let giant_spawn_delay = {
+  15: 41000,
+  20: 16000,
+  22: 18000,
+  24: 9000,
+  30: 5000,
+  36: 17000,
+  37: 15000,
+  38: 17000,
+  39: 17000,
+  40: 17000,
+  41: 16000,
+  42: 5000,
+  43: 8000,
+  44: 5000,
+  45: 17000,
+  47: 25000,
+  50: 17000,
+  51: 15000,
+  52: 17000,
+  53: 17000,
+  54: 15000,
+  55: 5000,
+  58: 17000,
+  65: 17000,
+  70: 17000,
+  75: 17000,
+  80: 17000,
+  85: 17000,
+  90: 17000,
+  95: 17000,
+  100: 17000,
 }
 
 let shoot_time = {
@@ -281,7 +383,17 @@ function render() {
     if (Settings.window_alert && show_window_alert) { repaired.draw(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 3) }
     if (Settings.window_alert && show_nearby_alert) { zombiesnearby.draw(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 3) }
     if (show_shootT_alert) { shootT.draw(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 3) }
+    if (Settings.giant_alert && show_giant_alert) { GiantAlert.draw(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 3) }
 }
+
+register("worldUnload", () => {
+    max_pat = 0;
+    insta_pat = 0;
+    ss_pat = 0;
+    max_ammo = 0;
+    insta_kill = 0;
+    shopping_spree = 0;
+})
 
 register("step", () => {
   in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
@@ -320,7 +432,7 @@ register("step", () => {
     ChatLib.chat(round_update.replace("[", "").replace("]", ""))
       if (Settings.notify_next_power_up && round_update.includes("Round")) {
         if (max_ammo == 0 && insta_kill == 0 && shopping_spree == 0) { ChatLib.chat(`&3[&bMicu&3]&r No power up data yet.`) } 
-        else if (round_in_int > 97 && max_ammo == 97 && map === "Alien Arcadium" || round_in_int > 96 && max_ammo == 96 && map === "Alien Arcadium") {
+        else if (round_in_int > 97 && max_ammo == 97 && shopping_spree == 97 || round_in_int > 96 && max_ammo == 96 && shopping_spree == 96 || round_in_int > 97  && max_ammo == 97 && shopping_spree == 96 || round_in_int > 97  && max_ammo == 96 && shopping_spree == 97 || round_in_int > 96  && max_ammo == 96 && shopping_spree == 95 || round_in_int > 97  && max_ammo == 97 && shopping_spree == 95) {
           ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the Alien Arcadium!`)
         } else if (max_ammo == 26 && round_in_int > 26 && map !== "Alien Arcadium" || max_ammo == 27 && round_in_int > 27 && map !== "Alien Arcadium") {
           ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the ${map}`)
@@ -329,18 +441,37 @@ register("step", () => {
           if (Settings.notify_next_power_up_chat) { ChatLib.command(`pc [Micu] Next power up round: ${poweruptext.removeFormatting().replace("NaN", "")}`) }
         }
       }
+    if (Settings.next_round_camp && map === "Alien Arcadium") {
+    camp_spot.forEach((round) => {
+        if (round_update_int == round) {
+          ChatLib.chat(`&3[&bMicu&3]&r Camp Spot: ${camp_spot_location[round]}`)
+          if (Settings.camp_spot_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Camp Spot: ${camp_spot_location[round]}`) }, 1000) }
+        }
+      })
+    }
     if (Settings.notify_grow && map === "Alien Arcadium") {
     grow_round.forEach((gr) => {
         if (round_update_int == gr) {
-          ChatLib.chat("&3[&bMicu&3]&r&a Grow Round Detected!")
-          if (Settings.notify_grow_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Grow Round! ${grow_round_strat[gr]}`) }, 1000) }
-            setTimeout(() => {
-                TextTMacro()
-                ChatLib.chat("&3[&bMicu&3]&r&e You Can Shoot Now!")
-                if (Settings.notify_grow_chat) { ChatLib.command('pc [Micu] Shoot Now!') }
-            }, shoot_time[gr]);
+        ChatLib.chat("&3[&bMicu&3]&r&a Grow Round Detected!")
+        if (Settings.notify_grow_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Grow Round! ${grow_round_strat[gr]}`) }, 1000) }
+          setTimeout(() => {
+              TextTMacro()
+              ChatLib.chat("&3[&bMicu&3]&r&e You Can Shoot Now!")
+              if (Settings.notify_grow_chat) { ChatLib.command('pc [Micu] Shoot Now!') }
+          }, shoot_time[gr]);
         }
       })
+    }
+    if (Settings.giant_alert && map === "Alien Arcadium") {
+    giant_spawn.forEach((delay) => {
+        if (round_update_int == delay) {
+          setTimeout(() => {
+              GiantSpawn()
+              ChatLib.chat("&3[&bMicu&3]&r&e Giants is spawning soon!")
+              if (Settings.giant_alert_chat) { ChatLib.command('pc [Micu] Giants is spawning soon!') }
+          }, giant_spawn_delay[delay]);
+        }
+      })      
     }
   }
 
@@ -471,36 +602,9 @@ register("step", () => {
 
 register('renderOverlay', render);
 
-register("chat", fixedwindows).setCriteria("You have fully repaired this window!");
-
-register("chat", zomnearby).setCriteria("You can't repair windows while enemies are nearby!");
-
 register("command", () => {
 // test smth here
 }).setName("micutest")
-
-let alerting = false;
-register("step", () => {
-    //lrod alert stuff
-  if (round_in_int === 0) {return;}
-  if (Settings.lrod_alert) {
-    item = Player.getInventory().getStackInSlot(4)
-    if (!alerting) {
-      if (String(item.getNBT().getCompoundTag("tag").getCompoundTag("display").getTagMap().get("Name")).removeFormatting().toLowerCase().includes("lightning rod skill") && String(item.getUnlocalizedName()).removeFormatting().toLowerCase().includes("blazerod")) {
-        show_lrod_alert = true;
-        World.playSound("note.pling", 2, 3)
-        setTimeout(() => {
-          show_lrod_alert = false;
-        }, 3000)
-        alerting = true;
-      }
-    }
-    if (!String(item.getUnlocalizedName()).removeFormatting().toLowerCase().includes("blazerod")) {
-      show_lrod_alert = false;
-      alerting = false;
-    }
-  }
-}).setFps(5);
 
 register("chat", (chat, event) => {
   chat = ChatLib.getChatMessage(event).removeFormatting();
@@ -677,28 +781,20 @@ register("command", (setmap) => {
 //     }
 // }).setName("micuroundtest")
 
-function fixedwindows() {
-  show_window_alert = true;
-  World.playSound("note.pling", 2, 1)
-  setTimeout(() => {
-    show_window_alert = false;
-  }, 1000)
-}
-
-function zomnearby() {
-  show_nearby_alert = true;
-  World.playSound("note.pling", 2, 1)
-  setTimeout(() => {
-    show_nearby_alert = false;
-  }, 1000)
-}
-
 function TextTMacro() {
   show_shootT_alert = true;
   World.playSound("note.pling", 2, 3)
   setTimeout(() => {
     show_shootT_alert = false;
   }, 3000)
+}
+
+function GiantSpawn() {
+  show_giant_alert = true;
+  World.playSound("note.pling", 2, 1)
+  setTimeout(() => {
+    show_giant_alert = false;
+  }, 2000)
 }
 
 function stringDivider(str, width, spaceReplacer) {

@@ -6,10 +6,15 @@ let imageWidth
 let imageHeight
 let shouldDrawImage = false
 let timeoutId
+let map;
 
 register("step", () => {
     in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
-}).setFps(5);
+    if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("alien")) { map = "Alien Arcadium" }
+    if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("bad blood")) { map = "Bad Blood" }
+    if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("dead end")) { map = "Dead End" }
+    if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("prison")) { map = "Prison" }
+}).setFps(1);
 
 try {
     image = new Image("puncher.png", "../assets/puncher.png");
@@ -30,7 +35,7 @@ register("renderOverlay", () => {
 () => Settings.puncher_alert && image
 
 register("chat", () => {
-    if (Settings.puncher_alert && in_zombies) {
+    if (Settings.puncher_alert && in_zombies && map === "Alien Arcadium") {
         shouldDrawImage = true;
         new Sound({ source: "puncher.ogg" })?.play();
         if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] FUDGE! Rolled The Puncher AHHHHHHHHHHHHHHHHHHHH`) }
@@ -42,7 +47,7 @@ register("chat", () => {
 }).setCriteria("You found The Puncher in the Lucky Chest! You have 10s to claim it before it disappears!");
 
 register("chat", (name) => {
-    if (Settings.puncher_alert && in_zombies) {
+    if (Settings.puncher_alert && in_zombies && map === "Alien Arcadium") {
         new Sound({ source: "puncher.ogg" })?.play();
         () => Settings.puncher_alert
         if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] WASTED. ${name} rolled The Puncher!`) }

@@ -77,13 +77,19 @@
 		"victory!!!_alert" = false
 
 [alien_arcadium]
-	cornering_spot_in_party_chat = false
 	cornering_waypoints = false
-	notify_grow_round_in_party_chat = true
-	power_up_pattern_notification = true
-	notify_grow_round = true
+	power_up_pattern_notification = false
+	grow_round_alert_in_party_chat = true
 	pregame_info = false
 	notify_next_round_power_up = true
-	lightning_rod_alert = true
 	notify_next_round_power_up_in_party_chat = true
+	notify_camp = true
+	grow_round_alert = true
+	cornering_spot_in_party_chat = false
+	notify_camp_in_party_chat = true
+	notify_grow_round_in_party_chat = true
+	giants_alert = true
+	notify_grow_round = true
+	giants_alert_in_party_chat = true
+	lightning_rod_alert = true
 

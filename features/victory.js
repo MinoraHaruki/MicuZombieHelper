@@ -52,6 +52,6 @@ register("chat", (chat, event) => {
         if (timeoutId) clearTimeout(timeoutId)
         timeoutId = setTimeout(() => {
         shouldDrawImage = false
-        }, 10000)
+        }, 30000)
     }
 }).setCriteria("${chat}");

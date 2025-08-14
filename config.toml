@@ -27,10 +27,10 @@
 
 [overlay]
 	scale = 1.0
-	overlay_x = 7
+	overlay_x = 0
 	enabled = true
-	overlay_y = 104
-	strat = true
+	overlay_y = 0
+	strat = false
 
 [messages]
 	hide_revive_messages = false
@@ -78,7 +78,7 @@
 
 [alien_arcadium]
 	cornering_waypoints = false
-	power_up_pattern_notification = false
+	power_up_pattern_notification = true
 	grow_round_alert_in_party_chat = true
 	pregame_info = false
 	notify_next_round_power_up = true

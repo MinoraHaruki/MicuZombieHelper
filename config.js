@@ -74,8 +74,8 @@ class Settings {
     giant_alert_chat = false;
 
     @SwitchProperty({
-        name: "Lightning Rod Alert",
-        description: "Alerts you when your lightning rod is ready",
+        name: "Skill Alert",
+        description: "Alerts you when your skill is ready",
         category: "Alien Arcadium",
     })
     lrod_alert = true;

@@ -29,8 +29,8 @@
 	scale = 1.0
 	overlay_x = 0
 	enabled = true
-	overlay_y = 0
-	strat = false
+	overlay_y = 61
+	strat = true
 
 [messages]
 	hide_revive_messages = false
@@ -79,17 +79,25 @@
 [alien_arcadium]
 	cornering_waypoints = false
 	power_up_pattern_notification = true
-	grow_round_alert_in_party_chat = true
+	grow_round_alert_in_party_chat = false
 	pregame_info = false
 	notify_next_round_power_up = true
-	notify_next_round_power_up_in_party_chat = true
+	skill_alert = true
+	notify_next_round_power_up_in_party_chat = false
 	notify_camp = true
 	grow_round_alert = true
 	cornering_spot_in_party_chat = false
-	notify_camp_in_party_chat = true
+	notify_camp_in_party_chat = false
 	notify_grow_round_in_party_chat = true
 	giants_alert = true
 	notify_grow_round = true
-	giants_alert_in_party_chat = true
+	giants_alert_in_party_chat = false
 	lightning_rod_alert = true
+
+[party_chat]
+	notify_camp_in_party_chat = true
+	grow_round_alert_in_party_chat = true
+	giants_alert_in_party_chat = true
+	the_puncher_alert_in_party_chat = true
+	notify_next_round_power_up_in_party_chat = false
 

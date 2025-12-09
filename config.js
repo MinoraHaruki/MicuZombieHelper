@@ -41,7 +41,7 @@ class Settings {
     @SwitchProperty({
         name: "Notify Camp In Party Chat",
         description: "",
-        category: "Alien Arcadium",
+        category: "Party Chat",
     })
     camp_spot_chat = false;
 
@@ -55,7 +55,7 @@ class Settings {
     @SwitchProperty({
         name: "Grow Round Alert In Party Chat",
         description: "",
-        category: "Alien Arcadium",
+        category: "Party Chat",
     })
     notify_grow_chat = false;
 
@@ -69,7 +69,7 @@ class Settings {
     @SwitchProperty({
         name: "Giants Alert In Party Chat",
         description: "",
-        category: "Alien Arcadium",
+        category: "Party Chat",
     })
     giant_alert_chat = false;
 
@@ -97,7 +97,7 @@ class Settings {
     @SwitchProperty({
         name: "Notify Next Round Power Up In Party Chat",
         description: "",
-        category: "Alien Arcadium",
+        category: "Party Chat",
     })
     notify_next_power_up_chat = false;
 
@@ -127,8 +127,7 @@ class Settings {
     @SwitchProperty({
         name: "The Puncher Alert In Party Chat",
         description: "",
-        category: "General",
-        subcategory: "Fun",
+        category: "Party Chat",
     })
     puncher_chat_alert = false;
 
@@ -234,6 +233,7 @@ class Settings {
         this.initialize(this);
         this.setCategoryDescription('General', 'Settings for MicuZombieHelper');
         this.setCategoryDescription('Messages', 'Hide Messages (badly coded :sob:)')
+        this.setCategoryDescription('Party Chat', 'Party Chat Settings')
         this.setSubcategoryDescription('General', 'Fun', 'frfr');
         this.setCategoryDescription('Overlay', 'Overlay Settings');
         this.setCategoryDescription('Alien Arcadium', 'Alien Arcadium Utilities');

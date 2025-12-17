@@ -1,6 +1,6 @@
 import Settings from "../config";
 
-let in_zombies = false
+let in_zombies = true;
 let image
 let imageWidth
 let imageHeight
@@ -9,7 +9,7 @@ let timeoutId
 let map;
 
 register("step", () => {
-    in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
+    // in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
     if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("alien")) { map = "Alien Arcadium" }
     if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("bad blood")) { map = "Bad Blood" }
     if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("dead end")) { map = "Dead End" }
@@ -34,17 +34,20 @@ register("renderOverlay", () => {
 }),
 () => Settings.puncher_alert && image
 
-register("chat", () => {
+register("chat", (chat, event) => {
+    chat = String(ChatLib.getChatMessage(event, true))
     if (Settings.puncher_alert && in_zombies && map === "Alien Arcadium") {
-        shouldDrawImage = true;
-        new Sound({ source: "puncher.ogg" })?.play();
-        if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] FUDGE! Rolled The Puncher AHHHHHHHHHHHHHHHHHHHH`) }
-        if (timeoutId) clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            shouldDrawImage = false;
-        }, 3000);
+        if (chat.includes("&r&7You found &r&6The Puncher &r&7in the &r&5Lucky Chest&r&7! You have &r&c10s &r&7to claim it before it disappears!&r")) {
+            shouldDrawImage = true;
+            new Sound({ source: "puncher.ogg" })?.play();
+            if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] Oi Cai DiscordMess`) }
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                shouldDrawImage = false;
+            }, 3000);
+        }
     }
-}).setCriteria("You found The Puncher in the Lucky Chest! You have 10s to claim it before it disappears!");
+}).setCriteria("${chat}");
 
 register("chat", (name) => {
     if (Settings.puncher_alert && in_zombies && map === "Alien Arcadium") {

@@ -25,15 +25,8 @@ class Settings {
     strat = true;
 
     @SwitchProperty({
-        name: "Pregame Info",
-        description: "Shows important rules in chat when you join Alien Arcadium",
-        category: "Alien Arcadium",
-    })
-    show_pregame_info = true;
-
-    @SwitchProperty({
         name: "Notify Camp",
-        description: "Notify you when you should camp in specific round",
+        description: "Notify you when you should camp in specific round (Order: Safest/Fastest/Optional)",
         category: "Alien Arcadium",
     })
     next_round_camp = true;
@@ -72,6 +65,34 @@ class Settings {
         category: "Party Chat",
     })
     giant_alert_chat = false;
+
+    @SwitchProperty({
+        name: "o1 Alert",
+        description: "Alerts you when last o1 wave is coming",
+        category: "Alien Arcadium",
+    })
+    o1_alert = true;
+
+    @SwitchProperty({
+        name: "o1 Alert In Party Chat",
+        description: "",
+        category: "Party Chat",
+    })
+    o1_alert_chat = false;
+
+    @SwitchProperty({
+        name: "Insta Touched Alert (Grow Round)",
+        description: "Alerts you when insta has been pick up in grow round",
+        category: "Alien Arcadium",
+    })
+    instatouch = true;
+
+    @SwitchProperty({
+        name: "Insta Touched Alert (Grow Round) In Party Chat",
+        description: "",
+        category: "Party Chat",
+    })
+    instatouch_chat = false;
 
     @SwitchProperty({
         name: "Skill Alert",

@@ -1,17 +1,10 @@
 import Settings from "./config";
+import "./features/guide"
 import "./features/victory"
 import "./features/puncher"
 import "./features/skillreadyalert"
 import "./features/windowalert"
-import "./features/hidegoldchat"
-import "./features/hideknockedchat"
-import "./features/hideleftrejoinchat"
-import "./features/hideluckychestchat"
-import "./features/hidepowerupchat"
-import "./features/hideopenareachat"
-import "./features/hiderevchat"
-import "./features/hidewindowchat"
-import "./features/hidetargetchat"
+import "./features/hidemessages"
 
 register("command", () => Settings.openGUI()).setName("micu");
 
@@ -25,7 +18,7 @@ const data = new PogObject("MicuZombieHelper", {
 
 data.autosave();
 
-let pregame_info = "&3[&bMicu&3]&r Important rules: \n\n- You don't have to avoid insta kills but NEVER take it in r18 r23\n- Never take The Puncher from the chest\n- Slimes are important, when they are fully grown, they give MUCH more gold\n- Double Golds are GODLY, if you can, save them when they are a lot of golems or slimes\n- Get Shopping Spree r6 or r7, if r5 you won't get any spree r25 nor r35 (if you want to avoid that)\n- You should get timer mod(named ShowSpawnTime) if you want to know when to shoot slimes. (or you can use AIO Mod called ZombiesAddon)\n\nTo get as much gold as possible, you'll be using Pistol + Shotgun by the time you get cp, they have the highest ratio of gold give per damage dealt (except flamethrower because it's too weak), and if you're in trouble, you may scarcely use a 3rd weapon or a skill, and that until you get Diamond Chestplate!\n\nOnce you have the Diamond Chestplate, tell your team to s1 (save 1 zombie alive)!\nYou should get:\nUnder cps 10~11: DBSG-RR set (DBSG, RR, ZZ, lrod)\nOver cps 10~11: GD-RR set (GD, RR,ZZ, lrod)\nOnce you're set, buy Extra Health when you can (5k, 10k, 20k, 50k, 100k)\n\nThe corners used:\n- Chest corner(cc), at the chest (the block where you have the chest at your right and the wall at your left).\n- Ultimate (ult) corner, in the ultimate machine, the 1-block space.\n- Alternative (alt) corner, in Ferris Wheel, at the back window, opposite side of the iron bars.\n- Perk corner(pc), the left side of the perk store. (The right one is opp-pc, opposite of pc)\n\nWhen you have N Giant (x-y-z) it means the N giants will spawn as a 1st wave of X giants, the second wave of giant will have Y giants and the 3rd one Z giants (n,x,y,z numbers).\n\n(If you are new to this mode please read all of this)\nGood Luck!";
+let pregame_info = new TextComponent("&3[&bMicu&3]&r Click here for AA info and guide!").setClick("run_command", "/micuguidemenu")
 
 //s'more first load stuff
 if (data.firstload || data.firstload == undefined) {
@@ -39,13 +32,13 @@ let insta_kill = 0
 let max_ammo = 0
 let shopping_spree = 0
 
-let poweruptext_update
-let poweruptext
-let textinsta
-let textspree
-let textmax
+let poweruptext_update;
+let poweruptext;
+let textinsta;
+let textspree;
+let textmax;
 
-let chatlowcase
+let chatlowcase;
 
 let max_pat = 0;
 let max_pat1 = [2, 5, 8, 12, 16, 21, 26, 31, 36, 41, 46, 51, 61, 66, 71, 76, 81, 86, 91, 96];
@@ -61,34 +54,41 @@ let ss_pat2 = [6, 16, 26, 36, 46, 66, 76, 86, 96];
 let ss_pat3 = [7, 17, 27, 37, 47, 67, 77, 87, 97];
 
 let grow_round = [18, 23, 26, 29, 31, 33, 34, 39, 43, 47, 52];
-let grow_dg_check = false;
 
 let giant_spawn = [15, 20, 22, 24, 30, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 47, 50, 51, 52, 53, 54, 55, 58, 65, 70, 75, 80, 85, 90, 95, 100];
 
-let camp_spot = [22, 24, 27, 28, 30, 32, 36, 37, 38, 40, 41, 42, 44, 45, 46, 48, 49, 50, 51, 53, 54, 55, 58, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
+let o1_inc = [40, 45, 46, 48, 54, 55, 58, 60, 64, 67, 68, 69, 74, 77, 78, 79, 84, 87, 88, 89, 94, 97, 98, 99];
+
+let camp_spot = [24, 27, 28, 30, 32, 36, 37, 38, 40, 41, 42, 44, 45, 46, 48, 49, 50, 51, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
 
 let round_update;
 let round_update_noformat = "[Round 0]";
 let round_update_int = 0;
 let in_zombies = false;
+let alr_started = false;
 let infoed = false;
 let map = "Waiting Input...";
 let strat = "Loading...";
 let strat_next = "Loading...";
-let map_difficulty = "Loading...";
+let testdiff = "Loading...";
 
-let round = "[Round 0]";
+let dg_check = false;
+
+let round;
 
 let show_shootT_alert = false;
 let show_shootTdg_alert = false;
 let show_giant_alert = false;
+let show_instatouch_alert = false;
+let show_o1_alert = false;
 
+let instatouched = new Text('Insta got touched!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.RED)
 let shootT = new Text('Shoot now!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
 let shootTdg = new Text('Double Gold! Shoot now!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
 let GiantAlert = new Text('Giants is spawning soon!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
+let o1Alert = new Text('Incoming o1!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.RED) 
 
 let camp_spot_location = {
-  22: "CC",
   24: "CC",
   27: "CC",
   28: "CC",
@@ -104,68 +104,96 @@ let camp_spot_location = {
   45: "CC",
   46: "CC",
   48: "CC",
-  49: "Alt",
-  50: "Ult (Safe) / CC (Faster)",
-  51: "Door (the wooden part of ferris wheel)",
-  53: "Alt / Ult",
-  54: "Alt / Ult",
-  55: "Ult",
-  58: "Alt",
-  60: "Alt / Ult",
-  61: "CC",
+  49: "Alt / CC",
+  50: "CC / Ult",
+  51: "Door / CC / RC",
+  53: "CC / Ult / Alt",
+  54: "CC / Ult / Alt",
+  55: "CC / Alt / Ult",
+  58: "CC / Alt / Ult",
+  59: "Just ledge or stay on p5.",
+  60: "Ult / Opp-pc",
+  61: "CC / Ult / BC",
   62: "Alt / CC",
-  63: "CC",
-  64: "CC / Alt / P5",
-  65: "CC / Alt",
-  66: "CC",
-  67: "CC / Ult",
-  68: "CC / P5",
-  69: "Ult",
-  70: "P5 / Ult",
-  71: "CC",
-  72: "Alt / CC",
-  73: "CC",
-  74: "CC / Alt / P5",
-  75: "CC / Alt",
-  76: "CC",
-  77: "CC / Ult",
-  78: "CC / P5",
-  79: "Ult",
-  80: "P5 / Ult",
-  81: "CC",
+  63: "CC / Ult / BC",
+  64: "CC / P5 / Ult / PC",
+  65: "CC / Alt / Ult / Opp-pc",
+  66: "CC / Ult / BC",
+  67: "CC / Ult / Opp-pc",
+  68: "CC / P5 / Ult / Alt / BC",
+  69: "Ult / Opp-pc / PC",
+  70: "P5 / Ult / PC",
+  71: "CC / Ult / BC",
+  62: "Alt / CC",
+  73: "CC / Ult / BC",
+  74: "CC / P5 / Ult / PC",
+  75: "CC / Alt / Ult / Opp-pc",
+  66: "CC / Ult / BC",
+  77: "CC / Ult / Opp-pc",
+  78: "CC / P5 / Ult / Alt / BC",
+  79: "Ult / Opp-pc / PC",
+  80: "P5 / Ult / PC",
+  81: "CC / Ult / BC",
   82: "Alt / CC",
-  83: "CC",
-  84: "CC / Alt / P5",
-  85: "CC / Alt",
-  86: "CC",
-  87: "CC / Ult",
-  88: "CC / P5",
-  89: "Ult",
-  90: "P5 / Ult",
-  91: "CC",
+  83: "CC / Ult / BC",
+  84: "CC / P5 / Ult / PC",
+  85: "CC / Alt / Ult / Opp-pc",
+  86: "CC / Ult / BC",
+  87: "CC / Ult / Opp-pc",
+  88: "CC / P5 / Ult / Alt / BC",
+  89: "Ult / Opp-pc / PC",
+  90: "P5 / Ult / PC",
+  91: "CC / Ult / BC",
   92: "Alt / CC",
-  93: "CC",
-  94: "CC / Alt / P5",
-  95: "CC / Alt",
-  96: "CC",
-  97: "CC / Ult",
-  98: "CC / P5",
-  99: "Ult",
-  100: "P5 / Ult",
+  93: "CC / Ult / BC",
+  94: "CC / P5 / Ult / PC",
+  95: "CC / Alt / Ult / Opp-pc",
+  96: "CC / Ult / BC",
+  97: "CC / Ult / Opp-pc",
+  98: "CC / P5 / Ult / Alt / BC",
+  99: "Ult / Opp-pc / PC",
+  100: "P5 / Ult / PC"
 }
 
 let grow_round_strat = {
-  18: "Please don't shoot slime until i call. (Rev Cycle Spot: CC)",
-  23: "Please don't shoot slime until i call. (Rev Cycle Spot: CC)",
-  26: "Please don't shoot slime until i call. (Rev Cycle Spot: CC or RC (If x6 SS) / ENT",
-  29: "Please don't shoot slime until i call. (Rev Cycle Spot: PC)",
-  31: "Please don't shoot slime until i call. (Rev Cycle Spot: PC / CC)",
-  33: "Please don't shoot slime until i call. (Rev Cycle Spot: PC / CC)",
-  34: "Please don't shoot slime until i call. (Rev Cycle Spot: PC / CC)",
-  39: "Start shooting when Giant gets close. (Rev Cycle Spot: CC)",
-  43: "Start shooting when Giant gets close. (Rev Cycle Spot: CC)",
-  47: "Start shooting when Giant gets close or when slimes are fully grown. (Rev Cycle Spot: CC)",
-  52: "Final one! Start shooting when Giant gets close. (Rev Cycle Spot: CC)",
+  18: "Please don't shoot slimes until i call. (Rev Cycle Spot: CC)",
+  23: "Please don't shoot slimes until i call. (Rev Cycle Spot: CC)",
+  26: "Please don't shoot slimes until i call. (Rev Cycle Spot: RC / CC / ENT)",
+  29: "Please don't shoot slimes until i call. (Rev Cycle Spot: PC)",
+  31: "Please don't shoot slimes until i call. (Rev Cycle Spot: PC / CC)",
+  33: "Please don't shoot slimes until i call. (Rev Cycle Spot: PC / CC)",
+  34: "Please don't shoot slimes until i call. (Rev Cycle Spot: PC / CC)",
+  39: "Start shooting when Giants gets close. (Rev Cycle Spot: CC)",
+  43: "Start shooting when Giants gets close. (Rev Cycle Spot: CC)",
+  47: "Start shooting when Giants gets close or when slimes are fully grown. (Rev Cycle Spot: CC)",
+  52: "Final one! Start shooting when Giants gets close. (Rev Cycle Spot: CC)",
+}
+
+let o1_spawn_delay = {
+  40: 45000,
+  45: 34000,
+  46: 35000,
+  48: 33000,
+  54: 39000,
+  55: 34000,
+  58: 38000,
+  60: 30000,
+  64: 26000,
+  67: 30000,
+  68: 26000,
+  69: 26000,
+  74: 26000,
+  77: 30000,
+  78: 26000,
+  79: 26000,
+  84: 26000,
+  87: 30000,
+  88: 26000,
+  89: 26000,
+  94: 26000,
+  97: 30000,
+  98: 26000,
+  99: 26000,
 }
 
 let giant_spawn_delay = {
@@ -203,17 +231,17 @@ let giant_spawn_delay = {
 }
 
 let shoot_time = {
-  18: 35000,
-  23: 33000,
-  26: 40000,
-  29: 41000,
-  31: 36000,
-  33: 36000,
-  34: 36000,
-  39: 22000,
-  43: 13000,
-  47: 30000,
-  52: 22000,
+  18: 33,
+  23: 31,
+  26: 37,
+  29: 38,
+  31: 34,
+  33: 34,
+  34: 34,
+  39: 21,
+  43: 11,
+  47: 30,
+  52: 11,
 }
 
 let strategies = {
@@ -270,9 +298,9 @@ let strategies = {
   50: "4 Giants (0-2-2)",
   51: '4 Giants (2-2), stay at chest corner or door(the wooden part of ferris wheel) tons of Skeletons but they deal no damage. ',
   52: '4 Giants (0-2-2) CHEST CORNER. Giga Slimes Round! Grow Slimes and start shooting when giants spawn. Aim Giants! Ask for save 1, get cp and roll the chest. From now on, you can use 3rd weapons freely. ',
-  53: "4 Giants (0-2-2). 4 Giants (0-2-2). Tons of clowns ALT (better) OR ULT CORNER or cc(It's dangerous). Kill clowns and Giants asap! ",
+  53: "4 Giants (0-2-2). Tons of clowns ALT (better) OR ULT CORNER or cc(It's dangerous). Kill clowns and Giants asap! ",
   54: "4 Giants (0-2-2), now they are Rainbow giants! ALT (better) OR ULT CORNER or CC (It's dangerous). 2 o1 (0-1-0-1)! When the giants spawn, an o1 will arrive few seconds later, be careful!",
-  55: "5 Giants (0-1-1-1-1-1) Very hard round, be careful. Stay at ultimate corner. ",
+  55: "5 Giants (0-1-1-1-1-1) Very hard round, be careful. Stay at ultimate corner. (Micu: Make sure team have atleast 1 lrod and use 3rd this round)",
   56: 'Same as Round 25 with some golems. Mega Blob, roll if you need and if someone does not have chestplate, let them solo this and the next round. ',
   57: 'Same as Round 35 with some golems. Mega Magma. ',
   58: "6 Giants (0-3-0-3), 5 Old ones ALT (better) OR ULT CORNER: 2 o1! Kill the golems asap on the first wave!",
@@ -326,6 +354,9 @@ let strategies = {
   106: "You Win! Congratulations!"
 };
 
+var t, count;
+var CCOUNT;
+
 let box_y = 55;
 let box_x = 150;
 function render() {
@@ -349,7 +380,7 @@ function render() {
       } else {
         lines = {
               a: new Text("§aMap§7: " + map, x + 5, y + 5 * scale),
-              b: new Text("§aDifficulty§7: " + map_difficulty, x + 5, y + 15 * scale),
+              b: new Text("§aDifficulty§7: " + testdiff, x + 5, y + 15 * scale),
               c: new Text("§bRound§7: " + round_update_noformat.replace("[Round ", "").replace("]", "").replace("[", "").replace("Game Over!", "Good Game!"), x + 5, y + 25 * scale),
               d: new Text("§9Next Max§7: Round " + max_ammo, x + 5, y + 45 * scale),
               e: new Text("§cNext Insta§7: Round " + insta_kill, x + 5, y + 55 * scale),
@@ -359,7 +390,7 @@ function render() {
             lines[line].setScale(scale).draw();
         }
         //strat rendering
-        if (Settings.strat) {
+        if (Settings.strat && map === "Alien Arcadium") {
           box_y = 75
           box_x = 270;
           this_line = new Text("§7Strat:", x + 5, y + box_y * scale);
@@ -400,6 +431,8 @@ function render() {
     if (Settings.notify_grow && show_shootT_alert) { shootT.draw(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 4) }
     if (Settings.notify_grow && show_shootTdg_alert) { shootTdg.draw(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 4) }
     if (Settings.giant_alert && show_giant_alert) { GiantAlert.draw(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 4) }
+    if (Settings.o1_alert && show_o1_alert) { o1Alert.draw(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 4) }
+    if (Settings.instatouch && show_instatouch_alert) { instatouched.draw(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 4) }
 }
 
 register("worldUnload", () => {
@@ -413,6 +446,8 @@ register("worldUnload", () => {
 
 register("step", () => {
   in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
+  alr_started = String(Scoreboard.getLinesByScore(13)).replace("[", "").replace("]", "").toLowerCase().includes("round") ? true : false;
+  round = String(Scoreboard.getLinesByScore(13));
 
   if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("alien")) { map = "Alien Arcadium" }
   if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("bad blood")) { map = "Bad Blood" }
@@ -427,95 +462,83 @@ register("step", () => {
     insta_kill = 0;
     shopping_spree = 0;
     strat = "Loading...";
-    if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("alien")) {
-      if (Settings.show_pregame_info) {
-        setTimeout(() => {
-          ChatLib.chat(pregame_info);
-        }, 2000)
-      }
-    }
-    infoed = true;
+    if (map = "Alien Arcadium") { ChatLib.chat(pregame_info); infoed = true; }
   } if (infoed && !in_zombies) { infoed = false; }
 
-  poweruptext_update = "";
+  poweruptext_update = ``
   textinsta = `&cInsta&r: ${insta_kill} `
   textspree = `&5Spree&r: ${shopping_spree} `
   textmax = `&9Max&r: ${max_ammo} `
 
-  if (!in_zombies) return
-    if (map === "Bad Blood" || map === "Dead End" || map === "Prison") {
-      if (String(Scoreboard.getLinesByScore(5)).removeFormatting().replace("[Difficulty: ","").replace("]","").toLowerCase().includes("Normal")) { map_difficulty = "§aNormal§r" }
-      if (String(Scoreboard.getLinesByScore(5)).removeFormatting().replace("[Difficulty: ","").replace("]","").toLowerCase().includes("Hard")) { map_difficulty = "§cHard§r" }
-      if (String(Scoreboard.getLinesByScore(5)).removeFormatting().replace("[Difficulty: ","").replace("]","").toLowerCase().includes("RIP")) { map_difficulty = "§4§lRIP§r" }
-    }
-  round = String(Scoreboard.getLinesByScore(13))
+  if (!alr_started) return
+
   if (round_update != round) {
     round_update = round
     round_update_noformat = round_update.removeFormatting();
-    if (round_update_noformat.replace("[", "").replace("]", "").toLowerCase().includes("round")) {
-      round_update_int = parseInt(round_update_noformat.replace("[Round ", "").replace("]", ""))
-    }
     ChatLib.chat(round_update.replace("[", "").replace("]", ""))
-      if (Settings.notify_next_power_up && round_update_noformat.replace("[", "").replace("]", "").toLowerCase().includes("round")) {
-        if (max_ammo == 0 && insta_kill == 0 && shopping_spree == 0) { ChatLib.chat(`&3[&bMicu&3]&r No power up data yet.`) } 
-        else if (round_update_int > 102 && max_ammo == 102 && shopping_spree == 97 || round_update_int > 96 && max_ammo == 96 && shopping_spree == 96 || round_update_int > 102  && max_ammo == 102 && shopping_spree == 96 || round_update_int > 97  && max_ammo == 96 && shopping_spree == 97 || round_update_int > 96  && max_ammo == 96 && shopping_spree == 95 || round_update_int > 102  && max_ammo == 102 && shopping_spree == 95) {
-          ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the Alien Arcadium!`)
-        } else if (max_ammo >= 26 && round_update_int > 26 && map !== "Alien Arcadium" || max_ammo >= 27 && round_update_int > 27 && map !== "Alien Arcadium") {
-          ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the ${map}`)
+    if (map === "Bad Blood" || map === "Dead End" || map === "Prison") testdiff = String(Scoreboard.getLinesByScore(5)).replace("[Difficulty: ","").replace("]",""); else testdiff = "Loading..."
+      round_update_int = parseInt(round_update_noformat.replace("[Round ", "").replace("]", ""))
+      if (Settings.notify_next_power_up) {
+          if (max_ammo == 0 && insta_kill == 0 && shopping_spree == 0) { ChatLib.chat(`&3[&bMicu&3]&r No power up data yet.`) } 
+          else if (round_update_int > 102 && max_ammo == 102 && shopping_spree == 97 || round_update_int > 96 && max_ammo == 96 && shopping_spree == 96 || round_update_int > 102  && max_ammo == 102 && shopping_spree == 96 || round_update_int > 97  && max_ammo == 96 && shopping_spree == 97 || round_update_int > 96  && max_ammo == 96 && shopping_spree == 95 || round_update_int > 102  && max_ammo == 102 && shopping_spree == 95) {
+            ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the Alien Arcadium!`)
+          } else if (max_ammo >= 26 && round_update_int > 26 && map !== "Alien Arcadium" || max_ammo >= 27 && round_update_int > 27 && map !== "Alien Arcadium") {
+            ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the ${map}`)
+          } else {
+            ChatLib.chat(`&3[&bMicu&3]&r Next power up round: ${poweruptext}`)
+            if (Settings.notify_next_power_up_chat) { ChatLib.command(`pc [Micu] Next power up round: ${poweruptext.removeFormatting()}`) }
+          }
+        }
+      if (map === "Alien Arcadium") {
+        if (Settings.next_round_camp) {
+        camp_spot.forEach((round) => {
+            if (round_update_int == round) {
+              ChatLib.chat(`&3[&bMicu&3]&r Camp Spot: ${camp_spot_location[round]}`)
+              if (Settings.camp_spot_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Camp Spot: ${camp_spot_location[round]}`) }, 1000) }
+            }})
+        }
+        if (Settings.notify_grow) {
+        grow_round.forEach((gr) => {
+            if (round_update_int == gr && dg_check !== true) {
+            ChatLib.chat("&3[&bMicu&3]&r&a&l Grow Round Detected!")
+            if (Settings.notify_grow_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Grow Round! ${grow_round_strat[gr]}`) }, 1000) }
+                CCOUNT = shoot_time[gr];
+                t = setTimeout(countdown, 1000);
+            } else {
+              dg_check = false;
+              cdreset()
+            }
+          })
+        }
+        if (Settings.o1_alert) {
+          o1_inc.forEach((o1) => { if (round_update_int == o1) { setTimeout(o1Inc, o1_spawn_delay[o1]) } })
+        }
+        if (Settings.giant_alert) {
+          giant_spawn.forEach((delay) => { if (round_update_int == delay) { setTimeout(GiantSpawn, giant_spawn_delay[delay]) } })      
+        }
+      }
+      if (Settings.strat) {
+        if (strategies[round_update_int].length > 50) {
+          strat = stringDivider(strategies[round_update_int], 50, "\n");
+          strat = strat.split("\n");
         } else {
-          ChatLib.chat(`&3[&bMicu&3]&r Next power up round: ${poweruptext.replace("NaN", "")}`)
-          if (Settings.notify_next_power_up_chat) { ChatLib.command(`pc [Micu] Next power up round: ${poweruptext.removeFormatting().replace("NaN", "")}`) }
+          strat = strategies[round_update_int];
+        }
+        if (strategies[round_update_int+1].length > 50) {
+          strat_next = stringDivider(strategies[round_update_int+1], 50, "\n");
+          strat_next = strat_next.split("\n");
+        } else {
+          strat_next = strategies[round_update_int+1];
         }
       }
-    if (Settings.next_round_camp && map === "Alien Arcadium" && round_update_noformat.replace("[", "").replace("]", "").toLowerCase().includes("round")) {
-    camp_spot.forEach((round) => {
-        if (round_update_int == round) {
-          ChatLib.chat(`&3[&bMicu&3]&r Camp Spot: ${camp_spot_location[round]}`)
-          if (Settings.camp_spot_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Camp Spot: ${camp_spot_location[round]}`) }, 1000) }
-        }
-      })
     }
-    if (Settings.notify_grow && map === "Alien Arcadium" && round_update_noformat.replace("[", "").replace("]", "").toLowerCase().includes("round")) {
-    grow_round.forEach((gr) => {
-        if (round_update_int == gr) {
-        ChatLib.chat("&3[&bMicu&3]&r&a Grow Round Detected!")
-        if (Settings.notify_grow_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Grow Round! ${grow_round_strat[gr]}`) }, 1000) }
-            setTimeout(TextTMacro, shoot_time[gr])
-        }
-      })
-    }
-    if (Settings.giant_alert && map === "Alien Arcadium" && round_update_noformat.replace("[", "").replace("]", "").toLowerCase().includes("round")) {
-    giant_spawn.forEach((delay) => {
-        if (round_update_int == delay) {
-          setTimeout(() => {
-              GiantSpawn()
-          }, giant_spawn_delay[delay]);
-        }
-      })      
-    }
-    
-    if (Settings.strat) {
-      if (strategies[round_update_int].length > 50) {
-        strat = stringDivider(strategies[round_update_int], 50, "\n");
-        strat = strat.split("\n");
-      } else {
-        strat = strategies[round_update_int];
-      }
-      if (strategies[round_update_int+1].length > 50) {
-        strat_next = stringDivider(strategies[round_update_int+1], 50, "\n");
-        strat_next = strat_next.split("\n");
-      } else {
-        strat_next = strategies[round_update_int+1];
-      }
-    }
-  }
 
     let new_max = false;
     if (max_pat == 1) {
       new_max = false;
       max_pat1.forEach((max) => {
         if (!new_max) {
-          if (round_update_int < max) {
+          if (round_update_int <= max) {
             max_ammo = max;
             new_max = true;
           }
@@ -527,7 +550,7 @@ register("step", () => {
       new_max = false;
       max_pat2.forEach((max) => {
         if (!new_max) {
-          if (round_update_int < max) {
+          if (round_update_int <= max) {
             max_ammo = max;
             new_max = true;
           }
@@ -540,7 +563,7 @@ register("step", () => {
       new_insta = false;
       insta_pat1.forEach((insta) => {
         if (!new_insta) {
-          if (round_update_int < insta) {
+          if (round_update_int <= insta) {
             insta_kill = insta;
             new_insta = true;
           }
@@ -552,7 +575,7 @@ register("step", () => {
       new_insta = false;
       insta_pat2.forEach((insta) => {
         if (!new_insta) {
-          if (round_update_int < insta) {
+          if (round_update_int <= insta) {
             insta_kill = insta;
             new_insta = true;
           }
@@ -565,7 +588,7 @@ register("step", () => {
       new_ss = false;
       ss_pat1.forEach((ss) => {
         if (!new_ss) {
-          if (round_update_int < ss) {
+          if (round_update_int <= ss) {
             shopping_spree = ss;
             new_ss = true;
           }
@@ -577,7 +600,7 @@ register("step", () => {
       new_ss = false;
       ss_pat2.forEach((ss) => {
         if (!new_ss) {
-          if (round_update_int < ss) {
+          if (round_update_int <= ss) {
             shopping_spree = ss;
             new_ss = true;
           }
@@ -589,7 +612,7 @@ register("step", () => {
       new_ss = false;
       ss_pat3.forEach((ss) => {
         if (!new_ss) {
-          if (round_update_int < ss) {
+          if (round_update_int <= ss) {
             shopping_spree = ss;
             new_ss = true;
           }
@@ -598,26 +621,27 @@ register("step", () => {
       new_ss = false;
     }
   
-  if (poweruptext != poweruptext_update) poweruptext = poweruptext_update
+  if (poweruptext !== poweruptext_update) poweruptext = ""
 
-  if (insta_kill != 0) { poweruptext += textinsta } 
-  if (insta_kill == 21 && round_update_int >= 21 || insta_kill == 23 && round_update_int >= 23 || insta_kill == 0) { poweruptext -= textinsta }
+  if (insta_kill !== 0) poweruptext += textinsta
+  if (insta_kill == 21 && round_update_int >= 21 || insta_kill === 23 && round_update_int >= 23 || insta_kill === 0) poweruptext -= textinsta
 
-  if (max_ammo != 0) { poweruptext += textmax }
-  if (max_ammo == 96 && round_update_int > 96 && map === "Alien Arcadium" || max_ammo == 97 && round_update_int > 97 && map === "Alien Arcadium") { poweruptext -= textmax }
-  else if (max_ammo == 26 && round_update_int > 26 && map !== "Alien Arcadium" || max_ammo == 27 && round_update_int > 27 && map !== "Alien Arcadium") { poweruptext -= textmax }
+  if (max_ammo !== 0) poweruptext += textmax
+  if (max_ammo === 96 && round_update_int > 96 && map === "Alien Arcadium" || max_ammo === 97 && round_update_int > 97 && map === "Alien Arcadium") poweruptext -= textmax
+  else if (max_ammo === 26 && round_update_int > 26 && map !== "Alien Arcadium" || max_ammo === 27 && round_update_int > 27 && map !== "Alien Arcadium") poweruptext -= textmax
 
-  if (shopping_spree != 0) { poweruptext += textspree }
-  if (shopping_spree == 95 && round_update_int > 95 || shopping_spree == 96 && round_update_int > 96 || shopping_spree == 97 && round_update_int > 97) { poweruptext -= textspree }
+  if (shopping_spree !== 0) poweruptext += textspree
+  if (shopping_spree === 95 && round_update_int > 95 || shopping_spree === 96 && round_update_int > 96 || shopping_spree === 97 && round_update_int > 97) poweruptext -= textspree
 
 }).setFps(5);
 
 register('renderOverlay', render);
 
 register("chat", (chat, event) => {
-  chat = String(ChatLib.getChatMessage(event)).removeFormatting();
+  chat = String(ChatLib.getChatMessage(event, true));
+
   if (chat.includes("power up")) {return;}
-  if (chat.includes("activated Max Ammo!")) {
+  if (chat.includes("&r&eactivated &r&9&lMax Ammo&r&e!&r")) {
     max_pat1.forEach((max) => {
       if (max == round_update_int) {
         if (max_pat == 0) {
@@ -642,7 +666,7 @@ register("chat", (chat, event) => {
       ChatLib.chat("&3[&bMicu&3]&r&f Max pattern unknown. Use /maxpat <1/2> to specify max pattern manually. Max pattern will be automatically redetected when the next max is obtained. (use pattern 1 for 2, 5, 8, 12, '1s or '6s, and use pattern 2 for 3, 6, 9, 13, '2s or '7s)");
     }
   }
-  if (chat.includes("activated Insta Kill for 10s!")) {
+  if (chat.includes("&r&eactivated &r&c&lInsta Kill&r&e for &r&c10s&r&e!&r")) {
     insta_pat1.forEach((insta) => {
       if (insta == round_update_int) {
         if (insta_pat == 0) {
@@ -667,7 +691,7 @@ register("chat", (chat, event) => {
       ChatLib.chat("&3[&bMicu&3]&r&f Insta pattern unknown. Use /instapat <1/2> to specify insta pattern manually. Insta pattern will be automatically redetected when the next insta is obtained. (use pattern 1 for 2, 5, 8, 11, 14, 17, 20, 23, and use pattern 2 for 3, 6, 9, 12, 15, 18, 21)");
     }
   }
-  if (chat.includes("activated Shopping Spree for 20s!")) {
+  if (chat.includes("&r&eactivated &r&5&lShopping Spree&r&e for &r&c20s&r&e!&r")) {
     ss_pat1.forEach((ss) => {
       if (ss == round_update_int) {
         if (ss_pat == 0) {
@@ -704,14 +728,15 @@ register("chat", (chat, event) => {
   }
   if (chatlowcase !== chat) {
       chatlowcase = chat
-      if (chatlowcase.includes("activated Double Gold for 30s!")) {
+      if (chatlowcase.includes("&r&eactivated &r&6&lDouble Gold&r&e for &r&c30s&r&e!&r")) {
         grow_round.forEach((dg) => {
-          if (round_update_int == dg && map === "Alien Arcadium") {
-              TextTMacro2()
-          }
-        });
+          if (round_update_int == dg && map === "Alien Arcadium") { CCOUNT = 0; cdreset(); dg_check = true }})
       }
-  }
+      if (chat.includes("&r&eactivated &r&c&lInsta Kill&r&e for &r&c10s&r&e!&r")) {
+        grow_round.forEach((insta) => {
+        if (round_update_int == insta && map === "Alien Arcadium") { InstaTouch() }})
+      }
+    }
 }).setCriteria("${chat}");
 
 register("command", (pattern) => {
@@ -783,8 +808,7 @@ register("command", (setmap) => {
   }
 }).setName("setmap")
 
-
-// //Round Test
+//Round Test
 // register("command", (debuground) => {
 //     new_ss = true;
 //     new_max = true;
@@ -800,29 +824,37 @@ register("command", (setmap) => {
 //     }
 // }).setName("micuround")
 
-// //PowerUpCheck
-// register("command", () => {
-//   ChatLib.chat(poweruptext)
-// }).setName("micupowerup")
+function countdown() {
+    if (count == 0) {
+        TextTMacro()
+    } else {
+        count--;
+        t = setTimeout(countdown, 1000);
+    }
+}
 
-function TextTMacro2() {
-  show_shootTdg_alert = true;
-  World.playSound("note.pling", 2, 1)
-  setTimeout(() => {
-    show_shootTdg_alert = false;
-  }, 3000)
-  ChatLib.chat("&3[&bMicu&3]&r&e Double Gold is activated. You can shoot now!")
-  if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Double Gold is activated. Shoot now!')
+function cdreset() {
+    count = CCOUNT;
 }
 
 function TextTMacro() {
-  show_shootT_alert = true;
-  World.playSound("note.pling", 2, 3)
-  setTimeout(() => {
-    show_shootT_alert = false;
-  }, 3000)
-  ChatLib.chat("&3[&bMicu&3]&r&e You can shoot now!")
-  if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Shoot now!')
+  if (dg_check == true) {
+      show_shootTdg_alert = true;
+      World.playSound("note.pling", 2, 1)
+      setTimeout(() => {
+      show_shootTdg_alert = false;
+      }, 3000)
+    ChatLib.chat("&3[&bMicu&3]&r&e Double Gold is activated. You can shoot now!")
+    if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Double Gold is activated. Shoot now!')
+  } else {
+    show_shootT_alert = true;
+    World.playSound("note.pling", 2, 3)
+    setTimeout(() => {
+      show_shootT_alert = false;
+    }, 3000)
+    ChatLib.chat("&3[&bMicu&3]&r&e You can shoot now!")
+    if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Shoot now!')
+  }
 }
 
 function GiantSpawn() {
@@ -834,6 +866,27 @@ function GiantSpawn() {
   ChatLib.chat("&3[&bMicu&3]&r&e Giants is spawning soon!")
   if (Settings.giant_alert_chat) { ChatLib.command('pc [Micu] Giants is spawning soon!') }
 }
+
+function o1Inc() {
+  show_o1_alert = true;
+  World.playSound("note.pling", 2, 1)
+  setTimeout(() => {
+    show_o1_alert = false;
+  }, 2000)
+  ChatLib.chat("&3[&bMicu&3]&r&c&l INCOMING o1(s)!!!!!")
+  if (Settings.o1_alert_chat) { ChatLib.command('pc [Micu] INCOMING o1(s)!!!!!') }
+}
+
+function InstaTouch() {
+  show_instatouch_alert = true;
+  World.playSound("note.pling", 2, 1)
+  setTimeout(() => {
+    show_instatouch_alert = false;
+  }, 2000)
+  ChatLib.chat("&3[&bMicu&3]&r&c Insta has been touched! Stop shooting slimes then use sword to block and kill only mobs.")
+  if (Settings.instatouch_chat) { ChatLib.command('pc [Micu] Insta has been touched! Stop shooting slimes then use sword to block and kill only mobs.') }
+}
+
 
 function stringDivider(str, width, spaceReplacer) {
     if (str.length>width) {

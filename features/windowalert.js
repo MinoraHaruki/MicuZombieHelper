@@ -31,8 +31,10 @@ function zomnearby() {
   }, 1000)
 }
 
+register("chat", (chat, event) => {
+  chat = String(ChatLib.getChatMessage(event, true));
+    if (chat.includes("&r&aYou have fully repaired this window!&r") && in_zombies) fixedwindows();
+    if (chat.includes("&r&cStopped repairing. There are enemies nearby!&r") && in_zombies) zomnearby();
+}).setCriteria("${chat}");
+
 register('renderOverlay', renderwindowalert);
-
-register("chat", fixedwindows).setCriteria("You have fully repaired this window!");
-
-register("chat", zomnearby).setCriteria("You can't repair windows while enemies are nearby!");

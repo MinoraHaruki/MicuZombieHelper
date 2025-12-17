@@ -44,9 +44,8 @@ register("command", () => {
 }).setName("micutestvictory");
 
 register("chat", (chat, event) => {
-  chat = ChatLib.getChatMessage(event).removeFormatting();
-  chat = String(chat).toLowerCase();
-      if (chat.includes("survived!") && Settings.victory_dance && in_zombies) {
+  chat = String(ChatLib.getChatMessage(event, true));
+      if (chat.includes("&r&7&lSURVIVED!&r") && Settings.victory_dance && in_zombies) {
         shouldDrawImage = true
         new Sound({ source: "victory.ogg" })?.play();
         if (timeoutId) clearTimeout(timeoutId)

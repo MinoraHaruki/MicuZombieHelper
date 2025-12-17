@@ -30,7 +30,7 @@
 	overlay_x = 0
 	enabled = true
 	overlay_y = 61
-	strat = true
+	strat = false
 
 [messages]
 	hide_revive_messages = false
@@ -80,6 +80,7 @@
 	cornering_waypoints = false
 	power_up_pattern_notification = true
 	grow_round_alert_in_party_chat = false
+	o1_alert = true
 	pregame_info = false
 	notify_next_round_power_up = true
 	skill_alert = true
@@ -93,10 +94,13 @@
 	notify_grow_round = true
 	giants_alert_in_party_chat = false
 	lightning_rod_alert = true
+	"insta_touched_alert_(grow_round)" = true
 
 [party_chat]
-	notify_camp_in_party_chat = true
-	grow_round_alert_in_party_chat = true
+	"insta_touched_alert_(grow_round)_in_party_chat" = false
+	notify_camp_in_party_chat = false
+	grow_round_alert_in_party_chat = false
+	o1_alert_in_party_chat = true
 	giants_alert_in_party_chat = true
 	the_puncher_alert_in_party_chat = true
 	notify_next_round_power_up_in_party_chat = false

@@ -445,7 +445,7 @@ register("worldUnload", () => {
 register("step", () => {
   in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
   alr_started = String(Scoreboard.getLinesByScore(13)).replace("[", "").replace("]", "").toLowerCase().includes("round") ? true : false;
-  // round = String(Scoreboard.getLinesByScore(13));
+  round = String(Scoreboard.getLinesByScore(13));
 
   if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("alien")) { map = "Alien Arcadium" }
   if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("bad blood")) { map = "Bad Blood" }
@@ -463,7 +463,7 @@ register("step", () => {
     if (map = "Alien Arcadium") { ChatLib.chat(pregame_info); infoed = true; }
   } if (infoed && !in_zombies) { infoed = false; }
 
-  // if (!alr_started) return
+  if (!alr_started) return
 
   if (round_update != round) {
     round_update = round
@@ -802,24 +802,24 @@ register("command", (setmap) => {
 }).setName("setmap")
 
 // Round Test
-register("command", (debuground) => {
-    new_ss = true;
-    new_max = true;
-    new_insta = true;
-    round = `[Round ${debuground}]`;
-    ChatLib.chat(`&3[&bMicu&3]&r Debug Round: ${debuground}`);
-  if (debuground == 0) {
-      new_ss = true;
-      new_max = true;
-      new_insta = true;
-      round = `[Round ${debuground}]`;
-      ChatLib.chat("&3[&bMicu&3]&r Debug Round: Reset to 0");
-    }
-}).setName("micuround")
+// register("command", (debuground) => {
+//     new_ss = true;
+//     new_max = true;
+//     new_insta = true;
+//     round = `[Round ${debuground}]`;
+//     ChatLib.chat(`&3[&bMicu&3]&r Debug Round: ${debuground}`);
+//   if (debuground == 0) {
+//       new_ss = true;
+//       new_max = true;
+//       new_insta = true;
+//       round = `[Round ${debuground}]`;
+//       ChatLib.chat("&3[&bMicu&3]&r Debug Round: Reset to 0");
+//     }
+// }).setName("micuround")
 
-register("command", () => {
-  ChatLib.chat(poweruptext)
-}).setName("micupowerup")
+// register("command", () => {
+//   ChatLib.chat(poweruptext)
+// }).setName("micupowerup")
 
 function countdown() {
     if (count == 0) {

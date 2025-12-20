@@ -100,8 +100,8 @@
 	"insta_touched_alert_(grow_round)_in_party_chat" = false
 	notify_camp_in_party_chat = false
 	grow_round_alert_in_party_chat = false
-	o1_alert_in_party_chat = true
-	giants_alert_in_party_chat = true
-	the_puncher_alert_in_party_chat = true
+	o1_alert_in_party_chat = false
+	giants_alert_in_party_chat = false
+	the_puncher_alert_in_party_chat = false
 	notify_next_round_power_up_in_party_chat = false
 

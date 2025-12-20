@@ -1,6 +1,10 @@
 import Settings from "../config";
 
-let in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
+let in_zombies = false;
+
+register("step", () => {
+    in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
+}).setFps(1);
 
 register("chat", (chat, event) => {
     if (!in_zombies) return

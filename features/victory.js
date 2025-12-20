@@ -45,12 +45,14 @@ register("command", () => {
 
 register("chat", (chat, event) => {
   chat = String(ChatLib.getChatMessage(event, true));
-      if (chat.includes("&r&7&lSURVIVED!&r") && Settings.victory_dance && in_zombies) {
-        shouldDrawImage = true
-        new Sound({ source: "victory.ogg" })?.play();
-        if (timeoutId) clearTimeout(timeoutId)
-        timeoutId = setTimeout(() => {
-        shouldDrawImage = false
-        }, 30000)
+    if (Settings.victory_dance && in_zombies) {
+      if (chat.includes("&r&7&lSURVIVED!&r") || chat.includes("&r&7&lESCAPED!&r")) {
+            shouldDrawImage = true
+            new Sound({ source: "victory.ogg" })?.play();
+            if (timeoutId) clearTimeout(timeoutId)
+            timeoutId = setTimeout(() => {
+            shouldDrawImage = false
+            }, 30000)
+        }
     }
 }).setCriteria("${chat}");

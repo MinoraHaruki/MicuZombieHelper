@@ -32,11 +32,10 @@ let insta_kill = 0
 let max_ammo = 0
 let shopping_spree = 0
 
-let poweruptext_update;
 let poweruptext;
-let textinsta;
-let textspree;
-let textmax;
+let textinsta = "";
+let textspree = "";
+let textmax = "";
 
 let chatlowcase;
 
@@ -124,11 +123,11 @@ let camp_spot_location = {
   69: "Ult / Opp-pc / PC",
   70: "P5 / Ult / PC",
   71: "CC / Ult / BC",
-  62: "Alt / CC",
+  72: "Alt / CC",
   73: "CC / Ult / BC",
   74: "CC / P5 / Ult / PC",
   75: "CC / Alt / Ult / Opp-pc",
-  66: "CC / Ult / BC",
+  76: "CC / Ult / BC",
   77: "CC / Ult / Opp-pc",
   78: "CC / P5 / Ult / Alt / BC",
   79: "Ult / Opp-pc / PC",
@@ -170,30 +169,30 @@ let grow_round_strat = {
 }
 
 let o1_spawn_delay = {
-  40: 45000,
-  45: 34000,
-  46: 35000,
-  48: 33000,
-  54: 39000,
-  55: 34000,
-  58: 38000,
-  60: 30000,
-  64: 26000,
-  67: 30000,
-  68: 26000,
-  69: 26000,
-  74: 26000,
-  77: 30000,
-  78: 26000,
-  79: 26000,
-  84: 26000,
-  87: 30000,
-  88: 26000,
-  89: 26000,
-  94: 26000,
-  97: 30000,
-  98: 26000,
-  99: 26000,
+  40: 44000,
+  45: 33000,
+  46: 34000,
+  48: 32000,
+  54: 38000,
+  55: 33000,
+  58: 37000,
+  60: 29000,
+  64: 25000,
+  67: 29000,
+  68: 25000,
+  69: 25000,
+  74: 25000,
+  77: 29000,
+  78: 25000,
+  79: 25000,
+  84: 25000,
+  87: 29000,
+  88: 25000,
+  89: 25000,
+  94: 25000,
+  97: 29000,
+  98: 25000,
+  99: 25000,
 }
 
 let giant_spawn_delay = {
@@ -233,15 +232,15 @@ let giant_spawn_delay = {
 let shoot_time = {
   18: 33,
   23: 31,
-  26: 37,
-  29: 38,
+  26: 38,
+  29: 39,
   31: 34,
   33: 34,
   34: 34,
-  39: 21,
+  39: 20,
   43: 11,
-  47: 30,
-  52: 11,
+  47: 28,
+  52: 20,
 }
 
 let strategies = {
@@ -354,8 +353,7 @@ let strategies = {
   106: "You Win! Congratulations!"
 };
 
-var t, count;
-var CCOUNT;
+var count, CCOUNT;
 
 let box_y = 55;
 let box_x = 150;
@@ -447,7 +445,7 @@ register("worldUnload", () => {
 register("step", () => {
   in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
   alr_started = String(Scoreboard.getLinesByScore(13)).replace("[", "").replace("]", "").toLowerCase().includes("round") ? true : false;
-  round = String(Scoreboard.getLinesByScore(13));
+  // round = String(Scoreboard.getLinesByScore(13));
 
   if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("alien")) { map = "Alien Arcadium" }
   if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("bad blood")) { map = "Bad Blood" }
@@ -465,12 +463,7 @@ register("step", () => {
     if (map = "Alien Arcadium") { ChatLib.chat(pregame_info); infoed = true; }
   } if (infoed && !in_zombies) { infoed = false; }
 
-  poweruptext_update = ``
-  textinsta = `&cInsta&r: ${insta_kill} `
-  textspree = `&5Spree&r: ${shopping_spree} `
-  textmax = `&9Max&r: ${max_ammo} `
-
-  if (!alr_started) return
+  // if (!alr_started) return
 
   if (round_update != round) {
     round_update = round
@@ -621,19 +614,19 @@ register("step", () => {
       new_ss = false;
     }
   
-  if (poweruptext !== poweruptext_update) poweruptext = ""
+  poweruptext = textmax + textinsta + textspree
 
-  if (insta_kill !== 0) poweruptext += textinsta
-  if (insta_kill == 21 && round_update_int >= 21 || insta_kill === 23 && round_update_int >= 23 || insta_kill === 0) poweruptext -= textinsta
+  if (insta_kill !== 0) textinsta = `&cInsta&r: ${insta_kill} `
+  if (insta_kill == 21 && round_update_int >= 21 || insta_kill == 23 && round_update_int >= 23) textinsta = ""
 
-  if (max_ammo !== 0) poweruptext += textmax
-  if (max_ammo === 96 && round_update_int > 96 && map === "Alien Arcadium" || max_ammo === 97 && round_update_int > 97 && map === "Alien Arcadium") poweruptext -= textmax
-  else if (max_ammo === 26 && round_update_int > 26 && map !== "Alien Arcadium" || max_ammo === 27 && round_update_int > 27 && map !== "Alien Arcadium") poweruptext -= textmax
+  if (max_ammo !== 0) textmax = `&9Max&r: ${max_ammo} `
+  if (max_ammo === 96 && round_update_int > 96 && map === "Alien Arcadium" || max_ammo === 102 && round_update_int > 102 && map === "Alien Arcadium") textmax = ""
+  else if (max_ammo === 26 && round_update_int > 26 && map !== "Alien Arcadium" || max_ammo === 27 && round_update_int > 27 && map !== "Alien Arcadium") textmax = ""
 
-  if (shopping_spree !== 0) poweruptext += textspree
-  if (shopping_spree === 95 && round_update_int > 95 || shopping_spree === 96 && round_update_int > 96 || shopping_spree === 97 && round_update_int > 97) poweruptext -= textspree
+  if (shopping_spree !== 0) textspree = `&5Spree&r: ${shopping_spree} `
+  if (shopping_spree === 95 && round_update_int > 95 || shopping_spree === 96 && round_update_int > 96 || shopping_spree === 97 && round_update_int > 97) textspree = ""
 
-}).setFps(5);
+}).setFps(1);
 
 register('renderOverlay', render);
 
@@ -808,21 +801,25 @@ register("command", (setmap) => {
   }
 }).setName("setmap")
 
-//Round Test
-// register("command", (debuground) => {
-//     new_ss = true;
-//     new_max = true;
-//     new_insta = true;
-//     round = `[Round ${debuground}]`;
-//     ChatLib.chat(`&3[&bMicu&3]&r Debug Round: ${debuground}`);
-//   if (debuground == 0) {
-//       new_ss = true;
-//       new_max = true;
-//       new_insta = true;
-//       round = `[Round ${debuground}]`;
-//       ChatLib.chat("&3[&bMicu&3]&r Debug Round: Reset to 0");
-//     }
-// }).setName("micuround")
+// Round Test
+register("command", (debuground) => {
+    new_ss = true;
+    new_max = true;
+    new_insta = true;
+    round = `[Round ${debuground}]`;
+    ChatLib.chat(`&3[&bMicu&3]&r Debug Round: ${debuground}`);
+  if (debuground == 0) {
+      new_ss = true;
+      new_max = true;
+      new_insta = true;
+      round = `[Round ${debuground}]`;
+      ChatLib.chat("&3[&bMicu&3]&r Debug Round: Reset to 0");
+    }
+}).setName("micuround")
+
+register("command", () => {
+  ChatLib.chat(poweruptext)
+}).setName("micupowerup")
 
 function countdown() {
     if (count == 0) {

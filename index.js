@@ -58,7 +58,9 @@ let giant_spawn = [15, 20, 22, 24, 30, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 4
 
 let o1_inc = [40, 45, 46, 48, 54, 55, 58, 60, 64, 67, 68, 69, 74, 77, 78, 79, 84, 87, 88, 89, 94, 97, 98, 99];
 
-let camp_spot = [24, 27, 28, 30, 32, 36, 37, 38, 40, 41, 42, 44, 45, 46, 48, 49, 50, 51, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
+let corners_spot_round = [36, 37, 38, 40, 41, 42, 44, 45, 46, 48, 49, 50, 51, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
+let corners_optional_round = [49, 50, 51, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
+let corners_optional_text = "";
 
 let round_update;
 let round_update_noformat = "[Round 0]";
@@ -72,6 +74,7 @@ let strat_next = "Loading...";
 let testdiff = "Loading...";
 
 let dg_check = false;
+let grow_cancel = false;
 
 let round;
 
@@ -87,12 +90,7 @@ let shootTdg = new Text('Double Gold! Shoot now!').setScale(4).setShadow(true).s
 let GiantAlert = new Text('Giants is spawning soon!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
 let o1Alert = new Text('Incoming o1!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.RED) 
 
-let camp_spot_location = {
-  24: "CC",
-  27: "CC",
-  28: "CC",
-  30: "CC",
-  32: "CC",
+let corners_spot_safest = {
   36: "CC",
   37: "CC",
   38: "CC",
@@ -103,69 +101,196 @@ let camp_spot_location = {
   45: "CC",
   46: "CC",
   48: "CC",
-  49: "Alt / CC",
-  50: "CC / Ult",
-  51: "Door / CC / RC",
-  53: "CC / Ult / Alt",
-  54: "CC / Ult / Alt",
-  55: "CC / Alt / Ult",
-  58: "CC / Alt / Ult",
-  59: "Just ledge or stay on p5.",
-  60: "Ult / Opp-pc",
-  61: "CC / Ult / BC",
-  62: "Alt / CC",
-  63: "CC / Ult / BC",
-  64: "CC / P5 / Ult / PC",
-  65: "CC / Alt / Ult / Opp-pc",
-  66: "CC / Ult / BC",
-  67: "CC / Ult / Opp-pc",
-  68: "CC / P5 / Ult / Alt / BC",
-  69: "Ult / Opp-pc / PC",
-  70: "P5 / Ult / PC",
-  71: "CC / Ult / BC",
-  72: "Alt / CC",
-  73: "CC / Ult / BC",
-  74: "CC / P5 / Ult / PC",
-  75: "CC / Alt / Ult / Opp-pc",
-  76: "CC / Ult / BC",
-  77: "CC / Ult / Opp-pc",
-  78: "CC / P5 / Ult / Alt / BC",
-  79: "Ult / Opp-pc / PC",
-  80: "P5 / Ult / PC",
-  81: "CC / Ult / BC",
-  82: "Alt / CC",
-  83: "CC / Ult / BC",
-  84: "CC / P5 / Ult / PC",
-  85: "CC / Alt / Ult / Opp-pc",
-  86: "CC / Ult / BC",
-  87: "CC / Ult / Opp-pc",
-  88: "CC / P5 / Ult / Alt / BC",
-  89: "Ult / Opp-pc / PC",
-  90: "P5 / Ult / PC",
-  91: "CC / Ult / BC",
-  92: "Alt / CC",
-  93: "CC / Ult / BC",
-  94: "CC / P5 / Ult / PC",
-  95: "CC / Alt / Ult / Opp-pc",
-  96: "CC / Ult / BC",
-  97: "CC / Ult / Opp-pc",
-  98: "CC / P5 / Ult / Alt / BC",
-  99: "Ult / Opp-pc / PC",
-  100: "P5 / Ult / PC"
+  49: "Alt",
+  50: "Ult (Safest)",
+  51: "Door",
+  53: "CC",
+  54: "CC",
+  55: "CC",
+  58: "CC",
+  59: "Just ledge or stay on P5.",
+  60: "Ult",
+  61: "CC",
+  62: "CC",
+  63: "CC",
+  64: "Ult (Safest)",
+  65: "Ult (Safest)",
+  66: "CC",
+  67: "Ult (Safest)",
+  68: "Ult (Safest)",
+  69: "Ult",
+  70: "Ult",
+  71: "CC",
+  72: "CC",
+  73: "CC",
+  74: "Ult (Safest)",
+  75: "Ult (Safest)",
+  76: "CC",
+  77: "Ult (Safest)",
+  78: "Ult (Safest)",
+  79: "Ult",
+  80: "Ult",
+  81: "CC",
+  82: "CC",
+  83: "CC",
+  84: "Ult (Safest)",
+  85: "Ult (Safest)",
+  86: "CC",
+  87: "Ult (Safest)",
+  88: "Ult (Safest)",
+  89: "Ult",
+  90: "Ult",
+  91: "Ult (Safest)",
+  92: "Ult (Safest)",
+  93: "Ult (Safest)",
+  94: "Ult (Safest)",
+  95: "Ult (Safest)",
+  96: "Ult (Safest)",
+  97: "Ult (Safest)",
+  98: "Ult (Safest)",
+  99: "Ult (Safest)",
+  100: "Ult (Safest)",
+}
+
+let corners_spot_fastest = {
+  36: "CC",
+  37: "CC",
+  38: "CC",
+  40: "CC",
+  41: "CC",
+  42: "CC",
+  44: "CC",
+  45: "CC",
+  46: "CC",
+  48: "CC",
+  49: "Alt",
+  50: "CC (Fastest)",
+  51: "Door",
+  53: "CC",
+  54: "CC",
+  55: "CC",
+  58: "CC",
+  59: "Just ledge or stay on P5.",
+  60: "Ult",
+  61: "CC",
+  62: "CC",
+  63: "CC",
+  64: "CC (Fastest)",
+  65: "CC (Fastest)",
+  66: "CC",
+  67: "CC (Fastest)",
+  68: "CC (Fastest)",
+  69: "Ult",
+  70: "Ult",
+  71: "CC",
+  72: "CC",
+  73: "CC",
+  74: "CC (Fastest)",
+  75: "CC (Fastest)",
+  76: "CC",
+  77: "CC (Fastest)",
+  78: "CC (Fastest)",
+  79: "Ult",
+  80: "Ult",
+  81: "CC",
+  82: "CC",
+  83: "CC",
+  84: "CC (Fastest)",
+  85: "CC (Fastest)",
+  86: "CC",
+  87: "CC (Fastest)",
+  88: "CC (Fastest)",
+  89: "Ult",
+  90: "Ult",
+  91: "CC",
+  92: "CC",
+  93: "CC",
+  94: "CC (Fastest)",
+  95: "CC (Fastest)",
+  96: "CC",
+  97: "CC (Fastest)",
+  98: "CC (Fastest)",
+  99: "Ult",
+  100: "Ult",
+}
+
+let corners_spot_optional = {
+  49: "CC",
+  50: "CC",
+  51: "CC / RC",
+  53: "Ult / Alt",
+  54: "Ult / Alt",
+  55: "Ult / Alt",
+  58: "Ult / Alt",
+  60: "Opp-PC to PC",
+  61: "Ult / BC",
+  62: "Alt",
+  63: "Ult / BC",
+  64: "P5 / PC",
+  65: "Alt / Opp-PC",
+  66: "BC",
+  67: "Opp-PC",
+  68: "P5 / Alt / BC",
+  69: "Opp-PC to PC / PC",
+  70: "P5 / PC",
+  71: "Ult / BC",
+  72: "Alt",
+  73: "Ult / BC",
+  74: "P5 / PC",
+  75: "Alt / Opp-PC",
+  76: "BC",
+  77: "Opp-PC",
+  78: "P5 / Alt / BC",
+  79: "Opp-PC to PC / PC",
+  80: "P5 / PC",
+  81: "Ult / BC",
+  82: "Alt",
+  83: "Ult / BC",
+  84: "P5 / PC",
+  85: "Alt / Opp-PC",
+  86: "BC",
+  87: "Opp-PC",
+  88: "P5 / Alt / BC",
+  89: "Opp-PC to PC / PC",
+  90: "P5 / PC",
+  91: "Ult / BC",
+  92: "Alt",
+  93: "Ult / BC",
+  94: "P5 / PC",
+  95: "Alt / Opp-PC",
+  96: "BC",
+  97: "Opp-PC",
+  98: "P5 / Alt / BC",
+  99: "Opp-PC to PC / PC",
+  100: "P5 / PC",
 }
 
 let grow_round_strat = {
-  18: "Please don't shoot slimes until i call. (Rev Cycle Spot: CC)",
-  23: "Please don't shoot slimes until i call. (Rev Cycle Spot: CC)",
-  26: "Please don't shoot slimes until i call. (Rev Cycle Spot: RC / CC / ENT)",
-  29: "Please don't shoot slimes until i call. (Rev Cycle Spot: PC)",
-  31: "Please don't shoot slimes until i call. (Rev Cycle Spot: PC / CC)",
-  33: "Please don't shoot slimes until i call. (Rev Cycle Spot: PC / CC)",
-  34: "Please don't shoot slimes until i call. (Rev Cycle Spot: PC / CC)",
-  39: "Start shooting when Giants gets close. (Rev Cycle Spot: CC)",
-  43: "Start shooting when Giants gets close. (Rev Cycle Spot: CC)",
-  47: "Start shooting when Giants gets close or when slimes are fully grown. (Rev Cycle Spot: CC)",
-  52: "Final one! Start shooting when Giants gets close. (Rev Cycle Spot: CC)",
+  18: "Please don't shoot slimes until i call. (Corner Spot: CC)",
+  23: "Please don't shoot slimes until i call. (Corner Spot: CC)",
+  26: "Please don't shoot slimes until i call. (Corner Spot: RC / ENT)",
+  29: "Please don't shoot slimes until i call. (Corner Spot: PC)",
+  31: "Please don't shoot slimes until i call. (Corner Spot: PC)",
+  33: "Please don't shoot slimes until i call. (Corner Spot: PC / CC)",
+  34: "Please don't shoot slimes until i call. (Corner Spot: PC / CC)",
+  39: "Start shooting when Giants gets close. (Corner Spot: CC)",
+  43: "Start shooting when Giants gets close. (Corner Spot: CC)",
+  47: "Start shooting when Giants gets close or when slimes are fully grown. (Corner Spot: CC)",
+  52: "Final one! Start shooting when Giants gets close. (Corner Spot: CC)",
+}
+
+let grow_round_short = {
+  18: "Stay at CC and don't shoot slimes until call.",
+  23: "Stay at CC and don't shoot slimes until call.",
+  26: "Stay at RC or ENT and don't shoot slimes until call.",
+  29: "Stay at PC and don't shoot slimes until call.",
+  31: "Stay at PC and don't shoot slimes until call.",
+  33: "Stay at PC or CC and don't shoot slimes until call.",
+  34: "Stay at PC or CC and don't shoot slimes until call.",
+  39: "Stay at CC and start shooting when Giants gets close.",
+  43: "Stay at CC and start shooting when Giants gets close.",
+  47: "Stay at CC and start shooting when Giants gets close or when slimes are fully grown.",
+  52: "Final one! Stay at CC and start shooting when Giants gets close", 
 }
 
 let o1_spawn_delay = {
@@ -240,7 +365,7 @@ let shoot_time = {
   39: 20,
   43: 11,
   47: 28,
-  52: 20,
+  52: 13,
 }
 
 let strategies = {
@@ -440,6 +565,7 @@ register("worldUnload", () => {
     max_ammo = 0;
     insta_kill = 0;
     shopping_spree = 0;
+    corners_optional_text = ""
 })
 
 register("step", () => {
@@ -459,6 +585,7 @@ register("step", () => {
     max_ammo = 0;
     insta_kill = 0;
     shopping_spree = 0;
+    corners_optional_text = ""
     strat = "Loading...";
     if (map = "Alien Arcadium") { ChatLib.chat(pregame_info); infoed = true; }
   } if (infoed && !in_zombies) { infoed = false; }
@@ -483,32 +610,30 @@ register("step", () => {
           }
         }
       if (map === "Alien Arcadium") {
-        if (Settings.next_round_camp) {
-        camp_spot.forEach((round) => {
+        if (Settings.corners_options_optional) {
+          corners_optional_round.forEach((round) => {
             if (round_update_int == round) {
-              ChatLib.chat(`&3[&bMicu&3]&r Camp Spot: ${camp_spot_location[round]}`)
-              if (Settings.camp_spot_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Camp Spot: ${camp_spot_location[round]}`) }, 1000) }
+              corners_optional_text = `| Optional: ${corners_spot_optional[round]}`
+            }})
+        }
+        if (Settings.next_round_camp) {
+          corners_spot_round.forEach((round) => {
+            if (round_update_int == round) {
+              ChatLib.chat(`&3[&bMicu&3]&r Corner Spot: ${Settings.corners_options == 0 ? corners_spot_safest[round] : undefined || Settings.corners_options == 1 ? corners_spot_fastest[round] : undefined} ${round_update_int > 48 && Settings.corners_options_optional ? corners_optional_text : ""}`)
+              if (Settings.camp_spot_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Corner Spot: ${Settings.corners_options == 0 ? corners_spot_safest[round] : undefined || Settings.corners_options == 1 ? corners_spot_fastest[round] : undefined} ${round_update_int > 48 && Settings.corners_options_optional ? corners_optional_text : ""}`) }, 1000) }
             }})
         }
         if (Settings.notify_grow) {
         grow_round.forEach((gr) => {
-            if (round_update_int == gr && dg_check !== true) {
-            ChatLib.chat("&3[&bMicu&3]&r&a&l Grow Round Detected!")
+            if (round_update_int == gr && dg_check !== true && grow_cancel !== true) {
+            ChatLib.chat(`&3[&bMicu&3]&r&a&l Grow Round Detected! &r&a${grow_round_short[gr]}`)
             if (Settings.notify_grow_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Grow Round! ${grow_round_strat[gr]}`) }, 1000) }
                 CCOUNT = shoot_time[gr];
                 t = setTimeout(countdown, 1000);
-            } else {
-              dg_check = false;
-              cdreset()
-            }
-          })
+            } else { dg_check = false; cdreset(); grow_cancel = false; }})
         }
-        if (Settings.o1_alert) {
-          o1_inc.forEach((o1) => { if (round_update_int == o1) { setTimeout(o1Inc, o1_spawn_delay[o1]) } })
-        }
-        if (Settings.giant_alert) {
-          giant_spawn.forEach((delay) => { if (round_update_int == delay) { setTimeout(GiantSpawn, giant_spawn_delay[delay]) } })      
-        }
+        if (Settings.o1_alert) o1_inc.forEach((o1) => { if (round_update_int == o1) { setTimeout(o1Inc, o1_spawn_delay[o1]) } })
+        if (Settings.giant_alert) giant_spawn.forEach((delay) => { if (round_update_int == delay) { setTimeout(GiantSpawn, giant_spawn_delay[delay]) } })
       }
       if (Settings.strat) {
         if (strategies[round_update_int].length > 50) {
@@ -735,14 +860,14 @@ register("chat", (chat, event) => {
 register("command", (pattern) => {
   if (pattern == 1) {
     max_pat = 1;
-    ChatLib.chat("&3[&bMicu&3]&r&9 Set Max Ammo pattern to 1");
+    ChatLib.chat("&3[&bMicu&3]&r Set &9Max Ammo&r pattern to 1");
   } else if (pattern == 2) {
     max_pat = 2;
-    ChatLib.chat("&3[&bMicu&3]&r&9 Set Max Ammo pattern to 2");
+    ChatLib.chat("&3[&bMicu&3]&r Set &9Max Ammo&r pattern to 2");
   } else if (pattern == 0) {
     max_ammo = 0;
     max_pat = 0;
-    ChatLib.chat("&3[&bMicu&3]&r Reset Max Ammo pattern.");
+    ChatLib.chat("&3[&bMicu&3]&r Reset &9Max Ammo&r pattern.");
   } else {
     ChatLib.chat("&3[&bMicu&3]&r&f To specify max pattern manually, use 1 or 2 as argument. (use pattern 1 for 2, 5, 8, 12, '1s or '6s, and use pattern 2 for 3, 6, 9, 13, '2s or '7s)");
   }
@@ -751,14 +876,14 @@ register("command", (pattern) => {
 register("command", (pattern) => {
   if (pattern == 1) {
     insta_pat = 1;
-    ChatLib.chat("&3[&bMicu&3]&r&c Set Insta Kill pattern to 1");
+    ChatLib.chat("&3[&bMicu&3]&r Set &cInsta Kill&r pattern to 1");
   } else if (pattern == 2) {
     insta_pat = 2;
-    ChatLib.chat("&3[&bMicu&3]&r&c Set Insta Kill pattern to 2");
+    ChatLib.chat("&3[&bMicu&3]&r Set &cInsta Kill&r pattern to 2");
   } else if (pattern == 0) {
     insta_kill = 0;
     insta_pat = 0;
-    ChatLib.chat("&3[&bMicu&3]&r Reset Insta Kill pattern.");
+    ChatLib.chat("&3[&bMicu&3]&r Reset &cInsta Kill&r pattern.");
   } else {
     ChatLib.chat("&3[&bMicu&3]&r&f To specify insta pattern manually, use 1 or 2 as argument. (use pattern 1 for 2, 5, 8, 11, 14, 17, 20, 23, and use pattern 2 for 3, 6, 9, 12, 15, 18, 21)");
   }
@@ -767,13 +892,13 @@ register("command", (pattern) => {
 register("command", (pattern) => {
   if (pattern == 1) {
     ss_pat = 1;
-    ChatLib.chat("&3[&bMicu&3]&r&5 Set Shopping Spree pattern to 1");
+    ChatLib.chat("&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 1");
   } else if (pattern == 2) {
     ss_pat = 2;
-    ChatLib.chat("&3[&bMicu&3]&r&5 Set Shopping Spree pattern to 2");
+    ChatLib.chat("&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 2");
   } else if (pattern == 3) {
     ss_pat = 3;
-    ChatLib.chat("&3[&bMicu&3]&r&5 Set Shopping Spree pattern to 3");
+    ChatLib.chat("&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 3");
   } else if (pattern == 0) {
     shopping_spree = 0;
     ss_pat = 0;
@@ -801,6 +926,43 @@ register("command", (setmap) => {
   }
 }).setName("setmap")
 
+register("chat", (name) => {
+    if (map === "Alien Arcadium") {
+      grow_round.forEach((dg) => {
+        if (round_update_int == dg) { 
+          grow_cancel = true;
+          CCOUNT = 0;
+          cdreset();
+          ChatLib.chat(`&3[&bMicu&3]&r &cCancelled! No grow! (by ${stripRank(name)})`)
+          if (Settings.notify_grow_chat) ChatLib.command(`pc [Micu] Cancelled by ${stripRank(name)}! No grow!`)
+      }})
+    }
+}).setCriteria("Party > ${name}: !ng");
+
+register("chat", (name) => {
+    max_pat = 1; ChatLib.chat(`&3[&bMicu&3]&r Set &9Max Ammo&r pattern to 1 (${stripRank(name)})`);
+}).setCriteria("Party > ${name}: !max 1");
+register("chat", (name) => {
+    max_pat = 2; ChatLib.chat(`&3[&bMicu&3]&r Set &9Max Ammo&r pattern to 2 (${stripRank(name)})`);
+}).setCriteria("Party > ${name}: !max 2");
+
+register("chat", (name) => {
+    insta_pat = 1; ChatLib.chat(`&3[&bMicu&3]&r Set &cInsta Kill&r pattern to 1 (${stripRank(name)})`);
+}).setCriteria("Party > ${name}: !insta 1");
+register("chat", (name) => {
+    insta_pat = 2; ChatLib.chat(`&3[&bMicu&3]&r Set &cInsta Kill&r pattern to 2 (${stripRank(name)})`);
+}).setCriteria("Party > ${name}: !insta 2");
+
+register("chat", (name) => {
+    ss_pat = 1; ChatLib.chat(`&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 1 (${stripRank(name)})`);
+}).setCriteria("Party > ${name}: !ss 1");
+register("chat", (name) => {
+    ss_pat = 2; ChatLib.chat(`&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 2 (${stripRank(name)})`);
+}).setCriteria("Party > ${name}: !ss 2");
+register("chat", (name) => {
+    ss_pat = 3; ChatLib.chat(`&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 3 (${stripRank(name)})`);
+}).setCriteria("Party > ${name}: !ss 3");
+
 // Round Test
 // register("command", (debuground) => {
 //     new_ss = true;
@@ -816,10 +978,6 @@ register("command", (setmap) => {
 //       ChatLib.chat("&3[&bMicu&3]&r Debug Round: Reset to 0");
 //     }
 // }).setName("micuround")
-
-// register("command", () => {
-//   ChatLib.chat(poweruptext)
-// }).setName("micupowerup")
 
 function countdown() {
     if (count == 0) {
@@ -844,13 +1002,15 @@ function TextTMacro() {
     ChatLib.chat("&3[&bMicu&3]&r&e Double Gold is activated. You can shoot now!")
     if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Double Gold is activated. Shoot now!')
   } else {
-    show_shootT_alert = true;
-    World.playSound("note.pling", 2, 3)
-    setTimeout(() => {
-      show_shootT_alert = false;
-    }, 3000)
-    ChatLib.chat("&3[&bMicu&3]&r&e You can shoot now!")
-    if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Shoot now!')
+    if (grow_cancel !== true) {
+      show_shootT_alert = true;
+      World.playSound("note.pling", 2, 3)
+      setTimeout(() => {
+        show_shootT_alert = false;
+      }, 3000)
+      ChatLib.chat("&3[&bMicu&3]&r&e You can shoot now!")
+      if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Shoot now!')
+    }
   }
 }
 
@@ -884,7 +1044,6 @@ function InstaTouch() {
   if (Settings.instatouch_chat) { ChatLib.command('pc [Micu] Insta has been touched! Stop shooting slimes then use sword to block and kill only mobs.') }
 }
 
-
 function stringDivider(str, width, spaceReplacer) {
     if (str.length>width) {
         var p=width
@@ -897,4 +1056,15 @@ function stringDivider(str, width, spaceReplacer) {
         }
     }
     return str;
+}
+
+function stripRank(player) {
+    let stripped = String(player) // 😏
+    stripped = stripped.replace("[MVP++] ","")
+    stripped = stripped.replace("[MVP+] ","")
+    stripped = stripped.replace("[MVP] ","")
+    stripped = stripped.replace("[VIP+] ","")
+    stripped = stripped.replace("[VIP] ","")
+    stripped = stripped.replace(" ","")
+    return stripped
 }

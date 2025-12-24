@@ -50,6 +50,6 @@ register("chat", (chat, event) => {
         cancel(event)
     }
     if (Settings.hide_gold_chat) {
-        if (chat.includes(/&r&6+\d Gold/)) cancel(event)
+        if (chat.includes("&r&6+")) cancel(event)
     }
 }).setCriteria("${chat}")

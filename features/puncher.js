@@ -40,7 +40,7 @@ register("chat", (chat, event) => {
         if (chat.includes("&r&7You found &r&6The Puncher &r&7in the &r&5Lucky Chest&r&7! You have &r&c10s &r&7to claim it before it disappears!&r")) {
             shouldDrawImage = true;
             new Sound({ source: "puncher.ogg" })?.play();
-            if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] Oi Cai DiscordMess`) }
+            if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] Oi Cai DissCorMess`) }
             if (timeoutId) clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
                 shouldDrawImage = false;

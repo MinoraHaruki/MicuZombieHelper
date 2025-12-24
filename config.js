@@ -4,9 +4,9 @@ import {
     @SliderProperty,
     @Vigilant,
     @ButtonProperty,
+    @SelectorProperty,
     Color,
 } from 'Vigilance';
-import {RickRoll, TurnOffPC, CloseGame, DisconnectFromServer, CloseCurrentGui} from "./features/test";
 
 @Vigilant('MicuZombieHelper')
 class Settings {
@@ -25,14 +25,29 @@ class Settings {
     strat = true;
 
     @SwitchProperty({
-        name: "Notify Camp",
-        description: "Notify you when you should camp in specific round (Order: Safest/Fastest/Optional)",
+        name: "Notify Corner",
+        description: "Notify you where you should stay in specific round",
         category: "Alien Arcadium",
     })
     next_round_camp = true;
 
+    @SelectorProperty({
+        name: 'Corner Options',
+        description: '',
+        category: 'Alien Arcadium',
+        options: ['Safest', 'Fastest'],
+    })
+    corners_options = 0;
+
     @SwitchProperty({
-        name: "Notify Camp In Party Chat",
+        name: "Optional Corners",
+        description: "Add optional corners for Challenges and Team Size Related",
+        category: "Alien Arcadium",
+    })
+    corners_options_optional = false;
+
+    @SwitchProperty({
+        name: "Notify Corner In Party Chat",
         description: "",
         category: "Party Chat",
     })
@@ -111,7 +126,7 @@ class Settings {
     @SwitchProperty({
         name: "Notify Next Round Power Up",
         description: "",
-        category: "Alien Arcadium",
+        category: "General",
     })
     notify_next_power_up = true;
 
@@ -125,7 +140,7 @@ class Settings {
     @SwitchProperty({
         name: "Power Up Pattern Notification",
         description: "Notify you when power up pattern is detected or when it is wrong. Disabling this might cause imperfection in the next power up feature.",
-        category: "Alien Arcadium",
+        category: "General",
     })
     powerup_ann = true;
 
@@ -139,7 +154,7 @@ class Settings {
 
     @SwitchProperty({
         name: "The Puncher Alert",
-        description: "Sound effect play(you or other player) and image will appear(only you) when rolled puncher in AA turn off this if you don't play AA",
+        description: "Sound effect play(you or other player) and image will appear(only you) when rolled puncher in AA",
         category: "General",
         subcategory: "Fun",
     })
@@ -176,16 +191,6 @@ class Settings {
         category: 'Overlay',
     })
     scale = 0.0;
-
-    @ButtonProperty({
-        name: "Don't touch plz",
-        description: "just don't :3",
-        category: "General",
-    })
-    idk() {
-        Client.currentGui.close()
-        RickRoll()
-    }
 
     @SwitchProperty({
         name: "Hide Window Repair Messages",

@@ -255,11 +255,26 @@ class Settings {
     })
     hide_knockdown_chat = false;
 
+    @SwitchProperty({
+        name: "No Grow",
+        description: "Cancel grow timer in grow round (!ng)",
+        category: "Party Commands",
+    })
+    no_grow_cmds = false;
+
+    @SwitchProperty({
+        name: "Set Powerup Pattern",
+        description: "Set Max/Insta/SS pattern (!max/!insta/!ss 1, 2 or 3)",
+        category: "Party Commands",
+    })
+    powerup_cmds = false;
+
     constructor() {
         this.initialize(this);
         this.setCategoryDescription('General', 'Settings for MicuZombieHelper');
-        this.setCategoryDescription('Messages', 'Hide Messages (badly coded :sob:)')
-        this.setCategoryDescription('Party Chat', 'Party Chat Settings')
+        this.setCategoryDescription('Messages', 'Hide Messages');
+        this.setCategoryDescription('Party Chat', 'Party Chat Settings');
+        this.setCategoryDescription('Party Commands', 'Party Commands Settings');
         this.setSubcategoryDescription('General', 'Fun', 'frfr');
         this.setCategoryDescription('Overlay', 'Overlay Settings');
         this.setCategoryDescription('Alien Arcadium', 'Alien Arcadium Utilities');

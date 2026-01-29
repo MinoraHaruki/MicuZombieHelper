@@ -2,7 +2,10 @@
   "name": "MicuZombieHelper",
   "creator": "MinoraHaruki",
   "description": "First module!",
-  "requires": ["Vigilance", "PogData"],
+  "requires": [
+    "PogData",
+    "Vigilance"
+  ],
   "version": "0.4.0",
   "entry": "index.js"
 }

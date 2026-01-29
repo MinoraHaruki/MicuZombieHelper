@@ -1,0 +1,153 @@
+
+[general]
+	power_up_pattern_notification = true
+	fully_repaired_alert = true
+	notify_next_round_power_up = true
+	lightning_rod_alert = true
+	strat_for_next_round = true
+
+	[general.overlay]
+		scale = 1.0
+		overlay_x = 7
+		enabled = true
+		strat_for_next_round = false
+		overlay_y = 75
+
+	[general.hud]
+		server_hud_display = true
+
+	[general.alien_arcadium]
+		power_up_pattern_notification = false
+		notify_grow_round_in_party_chat = false
+		notify_grow_round = false
+		pregame_info = false
+		fully_repaired_alert = true
+		lightning_rod_alert = true
+
+	[general.fun]
+		the_puncher_alert = true
+		the_puncher_alert_in_party_chat = true
+		"victory!!!_alert" = true
+
+[overlay]
+	scale = 1.0
+	overlay_x = 0
+	enabled = true
+	overlay_y = 61
+	strat = false
+
+[hud]
+	server_hud_display = true
+
+	[hud.color]
+		hud_color = "255,78,242,234"
+
+	[hud.ping]
+		ping_display = true
+
+	[hud.tps]
+		tps_display = true
+
+	[hud.fps]
+		fps_display = true
+
+[messages]
+	hide_revive_messages = false
+	"hide_player_leave/rejoin_messages" = false
+	hide_power_up_pickup_messages = false
+	hide_gold_received_messages = false
+	hide_knockdown_messages = false
+	hide_open_area_messages = false
+	hide_lucky_chest_messages = false
+	hide_window_repair_messages = true
+	hide_target_hit_messages = false
+
+[zombies]
+	power_up_pattern_notification = true
+	fully_repaired_alert = true
+
+	[zombies.general]
+		power_up_pattern_notification = true
+		fully_repaired_alert = true
+		notify_next_round_power_up = false
+		notify_next_round_power_up_in_party_chat = false
+
+	[zombies.overlay]
+		scale = 1.0
+		overlay_x = 7
+		enabled = true
+		strat_for_next_round = true
+		overlay_y = 108
+		strat = true
+
+	[zombies.alien_arcadium]
+		cornering_spot_in_party_chat = false
+		cornering_waypoints = false
+		notify_grow_round_in_party_chat = false
+		power_up_pattern_notification = true
+		notify_grow_round = true
+		pregame_info = false
+		notify_next_round_power_up = true
+		lightning_rod_alert = true
+		notify_next_round_power_up_in_party_chat = false
+
+	[zombies.fun]
+		the_puncher_alert = false
+		"victory!!!_alert" = false
+
+[alien_arcadium]
+	cornering_waypoints = false
+	power_up_pattern_notification = true
+	grow_round_alert_in_party_chat = false
+	o1_alert = true
+	add_optional_corners = false
+	notify_corners = true
+	corners_options = 0
+	pregame_info = false
+	notify_next_round_power_up = true
+	corner_options = 1
+	optional_corners = false
+	skill_alert = true
+	notify_next_round_power_up_in_party_chat = false
+	notify_camp = true
+	grow_round_alert = true
+	cornering_spot_in_party_chat = false
+	notify_camp_in_party_chat = false
+	notify_grow_round_in_party_chat = true
+	giants_alert = true
+	notify_grow_round = true
+	giants_alert_in_party_chat = false
+	notify_corner = false
+	lightning_rod_alert = true
+	"insta_touched_alert_(grow_round)" = false
+
+[party_chat]
+	"insta_touched_alert_(grow_round)_in_party_chat" = false
+	notify_corners_in_party_chat = false
+	notify_camp_in_party_chat = true
+	grow_round_alert_in_party_chat = false
+	o1_alert_in_party_chat = true
+	giants_alert_in_party_chat = true
+	the_puncher_alert_in_party_chat = true
+	notify_next_round_power_up_in_party_chat = false
+	notify_corner_in_party_chat = false
+
+[party_commands]
+	no_grow = false
+	party_commands = false
+	set_powerup_pattern = false
+
+[party]
+
+	[party.chat]
+		"insta_touched_alert_(grow_round)_in_party_chat" = false
+		grow_round_alert_in_party_chat = false
+		o1_alert_in_party_chat = false
+		giants_alert_in_party_chat = false
+		the_puncher_alert_in_party_chat = false
+		notify_corner_in_party_chat = false
+
+	[party.commands]
+		zombies_commands = true
+		party_commands = true
+

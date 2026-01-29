@@ -41,9 +41,9 @@ register("chat", (chat, event) => {
     }
     if (Settings.hide_powerup_chat) {
         if (chat.includes(`&r&eactivated &r&9&lMax Ammo&r&e!&r`) ||
-        chat.includes(`&r&eactivated Insta Kill for 10s!`) ||
+        chat.includes(`&r&eactivated &r&c&lInsta Kill&r&e for 10s!&r`) ||
         chat.includes(`&r&eactivated &r&9&lCarpenter&r&e!&r`) ||
-        chat.includes(`&r&eactivated Bouns Gold!`) ||
+        chat.includes(`&r&eactivated &r&6&lBouns Gold&r&e!&r`) ||
         chat.includes(`&r&eactivated &r&6&lDouble Gold&r&e for &r&c30s&r&e!&r`) ||
         chat.includes(`&r&eactivated Shopping Spree for 20s!`) ||
         chat.includes(`&r  &r&e&l> &r&eThe &r&5Lucky Chest &r&eis temporarily dirt cheap. Buy now!&r`))

@@ -5,11 +5,14 @@ import {
     @Vigilant,
     @ButtonProperty,
     @SelectorProperty,
+    @ColorProperty,
     Color,
 } from 'Vigilance';
 
 @Vigilant('MicuZombieHelper')
 class Settings {
+    StatsGui = new Gui()
+
     @SwitchProperty({
         name: "Enabled",
         description: "Enable the overlay for MicuZombieHelper",
@@ -40,16 +43,10 @@ class Settings {
     corners_options = 0;
 
     @SwitchProperty({
-        name: "Optional Corners",
-        description: "Add optional corners for Challenges and Team Size Related",
-        category: "Alien Arcadium",
-    })
-    corners_options_optional = false;
-
-    @SwitchProperty({
         name: "Notify Corner In Party Chat",
         description: "",
-        category: "Party Chat",
+        category: "Party",
+        subcategory: "Chat"
     })
     camp_spot_chat = false;
 
@@ -63,7 +60,8 @@ class Settings {
     @SwitchProperty({
         name: "Grow Round Alert In Party Chat",
         description: "",
-        category: "Party Chat",
+        category: "Party",
+        subcategory: "Chat"
     })
     notify_grow_chat = false;
 
@@ -77,7 +75,8 @@ class Settings {
     @SwitchProperty({
         name: "Giants Alert In Party Chat",
         description: "",
-        category: "Party Chat",
+        category: "Party",
+        subcategory: "Chat"
     })
     giant_alert_chat = false;
 
@@ -91,7 +90,8 @@ class Settings {
     @SwitchProperty({
         name: "o1 Alert In Party Chat",
         description: "",
-        category: "Party Chat",
+        category: "Party",
+        subcategory: "Chat"
     })
     o1_alert_chat = false;
 
@@ -105,7 +105,8 @@ class Settings {
     @SwitchProperty({
         name: "Insta Touched Alert (Grow Round) In Party Chat",
         description: "",
-        category: "Party Chat",
+        category: "Party",
+        subcategory: "Chat"
     })
     instatouch_chat = false;
 
@@ -122,27 +123,6 @@ class Settings {
         category: "General",
     })
     window_alert = true;
-
-    @SwitchProperty({
-        name: "Notify Next Round Power Up",
-        description: "",
-        category: "General",
-    })
-    notify_next_power_up = true;
-
-    @SwitchProperty({
-        name: "Notify Next Round Power Up In Party Chat",
-        description: "",
-        category: "Party Chat",
-    })
-    notify_next_power_up_chat = false;
-
-    @SwitchProperty({
-        name: "Power Up Pattern Notification",
-        description: "Notify you when power up pattern is detected or when it is wrong. Disabling this might cause imperfection in the next power up feature.",
-        category: "General",
-    })
-    powerup_ann = true;
 
     @SwitchProperty({
         name: "Victory!!! Alert",
@@ -163,7 +143,8 @@ class Settings {
     @SwitchProperty({
         name: "The Puncher Alert In Party Chat",
         description: "",
-        category: "Party Chat",
+        category: "Party",
+        subcategory: "Chat"
     })
     puncher_chat_alert = false;
 
@@ -256,25 +237,49 @@ class Settings {
     hide_knockdown_chat = false;
 
     @SwitchProperty({
-        name: "No Grow",
-        description: "Cancel grow timer in grow round (!ng)",
-        category: "Party Commands",
+        name: "Party Commands",
+        description: "",
+        category: "Party",
+        subcategory: "Commands"
     })
-    no_grow_cmds = false;
+    partycmd = false;
 
     @SwitchProperty({
-        name: "Set Powerup Pattern",
-        description: "Set Max/Insta/SS pattern (!max/!insta/!ss 1, 2 or 3)",
-        category: "Party Commands",
+        name: "Zombies Commands",
+        description: "",
+        category: "Party",
+        subcategory: "Commands"
     })
-    powerup_cmds = false;
+    zombiescmd = false;
+
+    @SwitchProperty({
+        name: "Server HUD Display",
+        description: "",
+        category: "General",
+        subcategory: "HUD",
+    })
+    StatsHUD = false;
+
+    @ButtonProperty({
+        name: "Move Server HUD",
+        description: "Moves the Server HUD Display",
+        category: "General",
+        subcategory: "HUD",
+        placeholder: "Move"
+    })
+    MovePingGui() {
+        this.StatsGui.open()
+    };
 
     constructor() {
         this.initialize(this);
+        this.setCategoryDescription('Server HUD', '');
         this.setCategoryDescription('General', 'Settings for MicuZombieHelper');
+        this.setSubcategoryDescription('General', 'HUD', '');
         this.setCategoryDescription('Messages', 'Hide Messages');
-        this.setCategoryDescription('Party Chat', 'Party Chat Settings');
-        this.setCategoryDescription('Party Commands', 'Party Commands Settings');
+        this.setCategoryDescription('Party', '');
+        this.setSubcategoryDescription('Party', 'Chat', '');
+        this.setSubcategoryDescription('Party', 'Commands', '');
         this.setSubcategoryDescription('General', 'Fun', 'frfr');
         this.setCategoryDescription('Overlay', 'Overlay Settings');
         this.setCategoryDescription('Alien Arcadium', 'Alien Arcadium Utilities');

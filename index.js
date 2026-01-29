@@ -5,52 +5,27 @@ import "./features/puncher"
 import "./features/skillreadyalert"
 import "./features/windowalert"
 import "./features/hidemessages"
+import "./features/serverhud"
+import "./features/partycmd"
 
 register("command", () => Settings.openGUI()).setName("micu");
 
-ChatLib.chat("Truong Thanh Hon")
-//pog
-import PogObject from "PogData";
+let isMicu = false;
 
-//firstload stuff
-const data = new PogObject("MicuZombieHelper", {
-});
-
-data.autosave();
+if (Player.getUUID() == "a811a2de-bf77-4899-876b-37ee63be00b0") {
+    ChatLib.chat("Truong Thanh Hon")
+    isMicu = true
+} else {
+    ChatLib.chat("&3[&bMicu&3]&r &dZombie Helper Loaded!&r&a Thank you for using it owo!")
+    isMicu = false
+}
 
 let pregame_info = new TextComponent("&3[&bMicu&3]&r Click here for AA info and guide!").setClick("run_command", "/micuguidemenu")
 
-//s'more first load stuff
-if (data.firstload || data.firstload == undefined) {
-  setTimeout(function() {
-    ChatLib.chat("&3[&bMicu&3]&r Thanks for using this module! If you wanna suggest me add helpful feature or feedback about it please create issue in my github!");
-    data.firstload = false;
-  }, 2000);
-}
-
-let insta_kill = 0
-let max_ammo = 0
-let shopping_spree = 0
-
-let poweruptext;
-let textinsta = "";
-let textspree = "";
-let textmax = "";
-
 let chatlowcase;
 
-let max_pat = 0;
-let max_pat1 = [2, 5, 8, 12, 16, 21, 26, 31, 36, 41, 46, 51, 61, 66, 71, 76, 81, 86, 91, 96];
-let max_pat2 = [3, 6, 9, 13, 17, 22, 27, 32, 37, 42, 47, 52, 62, 67, 72, 77, 82, 87, 92, 97, 102];
-
-let insta_pat = 0;
-let insta_pat1 = [2, 5, 8, 11, 14, 17, 20, 23];
-let insta_pat2 = [3, 6, 9, 12, 15, 18, 21];
-
-let ss_pat = 0;
-let ss_pat1 = [5, 15, 45, 55, 65, 75, 85, 95];
-let ss_pat2 = [6, 16, 26, 36, 46, 66, 76, 86, 96];
-let ss_pat3 = [7, 17, 27, 37, 47, 67, 77, 87, 97];
+let panchodg = 0;
+let carpenter = 0;
 
 let grow_round = [18, 23, 26, 29, 31, 33, 34, 39, 43, 47, 52];
 
@@ -59,8 +34,6 @@ let giant_spawn = [15, 20, 22, 24, 30, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 4
 let o1_inc = [40, 45, 46, 48, 54, 55, 58, 60, 64, 67, 68, 69, 74, 77, 78, 79, 84, 87, 88, 89, 94, 97, 98, 99];
 
 let corners_spot_round = [36, 37, 38, 40, 41, 42, 44, 45, 46, 48, 49, 50, 51, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
-let corners_optional_round = [49, 50, 51, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
-let corners_optional_text = "";
 
 let round_update;
 let round_update_noformat = "[Round 0]";
@@ -90,6 +63,10 @@ let shootTdg = new Text('Double Gold! Shoot now!').setScale(4).setShadow(true).s
 let GiantAlert = new Text('Giants is spawning soon!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.YELLOW)
 let o1Alert = new Text('Incoming o1!').setScale(4).setShadow(true).setAlign('CENTER').setColor(Renderer.RED) 
 
+let gold_earn_total = 0;
+let gold_earn_total_games = 0;
+let have_bonus_gold = false;
+
 let corners_spot_safest = {
   36: "CC",
   37: "CC",
@@ -98,56 +75,56 @@ let corners_spot_safest = {
   41: "CC",
   42: "CC",
   44: "CC",
-  45: "CC",
+  45: "Ult (Safest)",
   46: "CC",
   48: "CC",
-  49: "Alt",
+  49: "Door (Safest)",
   50: "Ult (Safest)",
   51: "Door",
-  53: "CC",
-  54: "CC",
-  55: "CC",
-  58: "CC",
+  53: "Alt (Safest)",
+  54: "Alt (Safest)",
+  55: "Ult (Safest)",
+  58: "Alt (Safest)",
   59: "Just ledge or stay on P5.",
   60: "Ult",
   61: "CC",
   62: "CC",
   63: "CC",
-  64: "Ult (Safest)",
+  64: "P5 (Safest)",
   65: "Ult (Safest)",
   66: "CC",
   67: "Ult (Safest)",
-  68: "Ult (Safest)",
+  68: "P5 (Safest)",
   69: "Ult",
   70: "Ult",
   71: "CC",
   72: "CC",
   73: "CC",
-  74: "Ult (Safest)",
+  74: "P5 (Safest)",
   75: "Ult (Safest)",
   76: "CC",
   77: "Ult (Safest)",
-  78: "Ult (Safest)",
+  78: "P5 (Safest)",
   79: "Ult",
   80: "Ult",
-  81: "CC",
-  82: "CC",
-  83: "CC",
-  84: "Ult (Safest)",
+  81: "Ult (Safest)",
+  82: "Ult (Safest)",
+  83: "Ult (Safest)",
+  84: "P5 (Safest)",
   85: "Ult (Safest)",
-  86: "CC",
+  86: "Ult (Safest)",
   87: "Ult (Safest)",
-  88: "Ult (Safest)",
+  88: "P5 (Safest)",
   89: "Ult",
   90: "Ult",
-  91: "CC",
-  92: "CC",
-  93: "CC",
-  94: "Ult (Safest)",
+  91: "Ult (Safest)",
+  92: "Ult (Safest)",
+  93: "Ult (Safest)",
+  94: "P5 (Safest)",
   95: "Ult (Safest)",
-  96: "CC",
+  96: "Ult (Safest)",
   97: "Ult (Safest)",
-  98: "Ult (Safest)",
+  98: "P5 (Safest)",
   99: "Ult",
   100: "Ult",
 }
@@ -160,16 +137,16 @@ let corners_spot_fastest = {
   41: "CC",
   42: "CC",
   44: "CC",
-  45: "CC",
+  45: "CC (Fastest)",
   46: "CC",
   48: "CC",
-  49: "Alt",
+  49: "Alt (Fastest)",
   50: "CC (Fastest)",
   51: "Door",
-  53: "CC",
-  54: "CC",
-  55: "CC",
-  58: "CC",
+  53: "CC (Fastest)",
+  54: "CC (Fastest)",
+  55: "CC (Fastest)",
+  58: "CC (Fastest)",
   59: "Just ledge or stay on P5.",
   60: "Ult",
   61: "CC",
@@ -179,7 +156,7 @@ let corners_spot_fastest = {
   65: "CC (Fastest)",
   66: "CC",
   67: "CC (Fastest)",
-  68: "CC (Fastest)",
+  68: "Ult (Fastest)",
   69: "Ult",
   70: "Ult",
   71: "CC",
@@ -189,7 +166,7 @@ let corners_spot_fastest = {
   75: "CC (Fastest)",
   76: "CC",
   77: "CC (Fastest)",
-  78: "CC (Fastest)",
+  78: "Ult (Fastest)",
   79: "Ult",
   80: "Ult",
   81: "CC",
@@ -199,7 +176,7 @@ let corners_spot_fastest = {
   85: "CC (Fastest)",
   86: "CC",
   87: "CC (Fastest)",
-  88: "CC (Fastest)",
+  88: "Ult (Fastest)",
   89: "Ult",
   90: "Ult",
   91: "CC",
@@ -209,70 +186,19 @@ let corners_spot_fastest = {
   95: "CC (Fastest)",
   96: "CC",
   97: "CC (Fastest)",
-  98: "CC (Fastest)",
+  98: "Ult (Fastest)",
   99: "Ult",
   100: "Ult",
-}
-
-let corners_spot_optional = {
-  49: "CC",
-  50: "CC",
-  51: "CC / RC",
-  53: "Ult / Alt",
-  54: "Ult / Alt",
-  55: "Ult / Alt",
-  58: "Ult / Alt",
-  60: "Opp-PC to PC",
-  61: "Ult / BC",
-  62: "Alt",
-  63: "Ult / BC",
-  64: "P5 / PC",
-  65: "Alt / Opp-PC",
-  66: "BC",
-  67: "Opp-PC",
-  68: "P5 / Alt / BC",
-  69: "Opp-PC to PC / PC",
-  70: "P5 / PC",
-  71: "Ult / BC",
-  72: "Alt",
-  73: "Ult / BC",
-  74: "P5 / PC",
-  75: "Alt / Opp-PC",
-  76: "BC",
-  77: "Opp-PC",
-  78: "P5 / Alt / BC",
-  79: "Opp-PC to PC / PC",
-  80: "P5 / PC",
-  81: "Ult / BC",
-  82: "Alt",
-  83: "Ult / BC",
-  84: "P5 / PC",
-  85: "Alt / Opp-PC",
-  86: "BC",
-  87: "Opp-PC",
-  88: "P5 / Alt / BC",
-  89: "Opp-PC to PC / PC",
-  90: "P5 / PC",
-  91: "Ult / BC",
-  92: "Alt",
-  93: "Ult / BC",
-  94: "P5 / PC",
-  95: "Alt / Opp-PC",
-  96: "BC",
-  97: "Opp-PC",
-  98: "P5 / Alt / BC",
-  99: "Opp-PC to PC / PC",
-  100: "P5 / PC",
 }
 
 let grow_round_strat = {
   18: "Please don't shoot slimes until i call. (Corner Spot: CC)",
   23: "Please don't shoot slimes until i call. (Corner Spot: CC)",
-  26: "Please don't shoot slimes until i call. (Corner Spot: RC / ENT)",
+  26: "Please don't shoot slimes until i call. (Corner Spot: RC)",
   29: "Please don't shoot slimes until i call. (Corner Spot: PC)",
   31: "Please don't shoot slimes until i call. (Corner Spot: PC)",
-  33: "Please don't shoot slimes until i call. (Corner Spot: PC / CC)",
-  34: "Please don't shoot slimes until i call. (Corner Spot: PC / CC)",
+  33: "Please don't shoot slimes until i call. (Corner Spot: CC)",
+  34: "Please don't shoot slimes until i call. (Corner Spot: CC)",
   39: "Start shooting when Giants gets close. (Corner Spot: CC)",
   43: "Start shooting when Giants gets close. (Corner Spot: CC)",
   47: "Start shooting when Giants gets close or when slimes are fully grown. (Corner Spot: CC)",
@@ -282,11 +208,11 @@ let grow_round_strat = {
 let grow_round_short = {
   18: "Stay at CC and don't shoot slimes until call.",
   23: "Stay at CC and don't shoot slimes until call.",
-  26: "Stay at RC or ENT and don't shoot slimes until call.",
+  26: "Stay at RC and don't shoot slimes until call.",
   29: "Stay at PC and don't shoot slimes until call.",
   31: "Stay at PC and don't shoot slimes until call.",
-  33: "Stay at PC or CC and don't shoot slimes until call.",
-  34: "Stay at PC or CC and don't shoot slimes until call.",
+  33: "Stay at CC and don't shoot slimes until call.",
+  34: "Stay at CC and don't shoot slimes until call.",
   39: "Stay at CC and start shooting when Giants gets close.",
   43: "Stay at CC and start shooting when Giants gets close.",
   47: "Stay at CC and start shooting when Giants gets close or when slimes are fully grown.",
@@ -355,16 +281,16 @@ let giant_spawn_delay = {
 }
 
 let shoot_time = {
-  18: 33,
-  23: 31,
-  26: 38,
+  18: 31,
+  23: 29,
+  26: 35,
   29: 37,
-  31: 34,
-  33: 34,
-  34: 34,
-  39: 20,
-  43: 11,
-  47: 28,
+  31: 33,
+  33: 33,
+  34: 33,
+  39: 21,
+  43: 12,
+  47: 29,
   52: 21
 }
 
@@ -478,7 +404,7 @@ let strategies = {
   106: "You Win! Congratulations!"
 };
 
-var count, CCOUNT;
+var t, count;
 
 let box_y = 55;
 let box_x = 150;
@@ -491,22 +417,24 @@ function render() {
     let this_line;
     let this_line2;
     if (Settings.enabled) {
-    Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y, box_x * scale, (box_y+15) * scale);
       if (map === "Alien Arcadium") {
+        Renderer.drawRect(Renderer.color(0, 0, 0, 0), x, y, box_x * scale, (box_y+35) * scale);
         lines = {
-              a: new Text("§aMap§7: " + map, x + 5, y + 5 * scale),
-              b: new Text("§bRound§7: " + round_update_noformat.replace("[Round ", "").replace("]", "").replace("[", "").replace("Game Over!", "Good Game!"), x + 5, y + 15 * scale),
-              c: new Text("§9Next Max§7: Round " + max_ammo, x + 5, y + 35 * scale),
-              d: new Text("§cNext Insta§7: Round " + insta_kill, x + 5, y + 45 * scale),
-              e: new Text("§5Next Spree§7: Round " + shopping_spree, x + 5, y + 55 * scale),
+              a: new Text("§aMap§7: " + map, x + 5, y + 5 * scale).setShadow(true),
+              b: new Text("§bRound§7: " + round_update_noformat.replace("[Round ", "").replace("]", "").replace("[", "").replace("Game Over!", "Good Game!"), x + 5, y + 15 * scale).setShadow(true),
+              c: new Text(`§6Gold This Round§7: ${gold_earn_total} (Total: ${gold_earn_total_games})`, x + 5, y + 35 * scale).setShadow(true),
+              d: new Text("§6Double Gold&7: " + panchodg, x + 5, y + 45 * scale).setShadow(true),
+              e: new Text("§3Carpenter§7: " + carpenter, x + 5, y + 55 * scale).setShadow(true),
+              f: new Text("§6Bonus Gold?§7: " + have_bonus_gold, x + 5, y + 65 * scale).setShadow(true),
         }
       } else {
+        Renderer.drawRect(Renderer.color(0, 0, 0, 0), x, y, box_x * scale, (box_y+15) * scale);
         lines = {
-              a: new Text("§aMap§7: " + map, x + 5, y + 5 * scale),
-              b: new Text("§aDifficulty§7: " + testdiff, x + 5, y + 15 * scale),
-              c: new Text("§bRound§7: " + round_update_noformat.replace("[Round ", "").replace("]", "").replace("[", "").replace("Game Over!", "Good Game!"), x + 5, y + 25 * scale),
-              d: new Text("§9Next Max§7: Round " + max_ammo, x + 5, y + 45 * scale),
-              e: new Text("§cNext Insta§7: Round " + insta_kill, x + 5, y + 55 * scale),
+              a: new Text("§aMap§7: " + map, x + 5, y + 5 * scale).setShadow(true),
+              b: new Text("§aDifficulty§7: " + testdiff, x + 5, y + 15 * scale).setShadow(true),
+              c: new Text("§bRound§7: " + round_update_noformat.replace("[Round ", "").replace("]", "").replace("[", "").replace("Game Over!", "Good Game!"), x + 5, y + 25 * scale).setShadow(true),
+              d: new Text(`§6Gold This Round§7: ${gold_earn_total} (Total: ${gold_earn_total_games})`, x + 5, y + 45 * scale).setShadow(true),
+              e: new Text("§6Double Gold&7: " + panchodg, x + 5, y + 55 * scale).setShadow(true),
         }
       }
         for (let line in lines) {
@@ -514,34 +442,34 @@ function render() {
         }
         //strat rendering
         if (Settings.strat && map === "Alien Arcadium") {
-          box_y = 75
+          box_y = 85;
           box_x = 270;
-          this_line = new Text("§7Strat:", x + 5, y + box_y * scale);
+          this_line = new Text("§7Strat:", x + 5, y + box_y * scale).setShadow(true);
           this_line.setScale(scale).draw();
           box_y += 10;
           if (Array.isArray(strat)) {
             strat.forEach((strat_line) => {
-              this_line = new Text("§7" + strat_line, x + 5, y + box_y * scale);
+              this_line = new Text("§7" + strat_line, x + 5, y + box_y * scale).setShadow(true);
               this_line.setScale(scale).draw();
               box_y += 10;
             })
           } else {
-            this_line = new Text("§7" + strat, x + 5, y + box_y * scale);
+            this_line = new Text("§7" + strat, x + 5, y + box_y * scale).setShadow(true);
             this_line.setScale(scale).draw();
             box_y += 10;
           }
           box_y += 10;
-          this_line2 = new Text("§7Next Strat:", x + 5, y + box_y * scale);
+          this_line2 = new Text("§7Next Strat:", x + 5, y + box_y * scale).setShadow(true);
           this_line2.setScale(scale).draw();
           box_y += 10;
           if (Array.isArray(strat_next)) {
             strat_next.forEach((strat_line) => {
-              this_line2 = new Text("§7" + strat_line, x + 5, y + box_y * scale);
+              this_line2 = new Text("§7" + strat_line, x + 5, y + box_y * scale).setShadow(true);
               this_line2.setScale(scale).draw();
               box_y += 10;
             })
           } else {
-            this_line2 = new Text("§7" + strat_next, x + 5, y + box_y * scale);
+            this_line2 = new Text("§7" + strat_next, x + 5, y + box_y * scale).setShadow(true);
             this_line2.setScale(scale).draw();
             box_y += 10;
           }
@@ -559,13 +487,11 @@ function render() {
 }
 
 register("worldUnload", () => {
-    max_pat = 0;
-    insta_pat = 0;
-    ss_pat = 0;
-    max_ammo = 0;
-    insta_kill = 0;
-    shopping_spree = 0;
-    corners_optional_text = ""
+    panchodg = 0;
+    carpenter = 0;
+    gold_earn_total = 0;
+    gold_earn_total_games = 0;
+    have_bonus_gold = false;
 })
 
 register("step", () => {
@@ -578,15 +504,13 @@ register("step", () => {
   if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("dead end")) { map = "Dead End" }
   if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("prison")) { map = "Prison" }
 
-  if (in_zombies && !infoed) {
-    max_pat = 0;
-    insta_pat = 0;
-    ss_pat = 0;
-    max_ammo = 0;
-    insta_kill = 0;
-    shopping_spree = 0;
-    corners_optional_text = ""
+  if (in_zombies && !infoed && !alr_started) {
+    panchodg = 0;
+    carpenter = 0;
+    gold_earn_total = 0;
+    gold_earn_total_games = 0;
     strat = "Loading...";
+    have_bonus_gold = false;
     if (String(Scoreboard.getLinesByScore(6)).removeFormatting().replace("[","").replace("]","").toLowerCase().includes("alien")) { ChatLib.chat(pregame_info); infoed = true; }
   } if (infoed && !in_zombies) { infoed = false; }
 
@@ -598,39 +522,24 @@ register("step", () => {
     ChatLib.chat(round_update.replace("[", "").replace("]", ""))
     if (map === "Bad Blood" || map === "Dead End" || map === "Prison") testdiff = String(Scoreboard.getLinesByScore(5)).replace("[Difficulty: ","").replace("]",""); else testdiff = "Loading..."
       round_update_int = parseInt(round_update_noformat.replace("[Round ", "").replace("]", ""))
-      if (Settings.notify_next_power_up) {
-          if (max_ammo == 0 && insta_kill == 0 && shopping_spree == 0) { ChatLib.chat(`&3[&bMicu&3]&r No power up data yet.`) } 
-          else if (round_update_int > 102 && max_ammo == 102 && shopping_spree == 97 || round_update_int > 96 && max_ammo == 96 && shopping_spree == 96 || round_update_int > 102  && max_ammo == 102 && shopping_spree == 96 || round_update_int > 97  && max_ammo == 96 && shopping_spree == 97 || round_update_int > 96  && max_ammo == 96 && shopping_spree == 95 || round_update_int > 102  && max_ammo == 102 && shopping_spree == 95) {
-            ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the Alien Arcadium!`)
-          } else if (max_ammo >= 26 && round_update_int > 26 && map !== "Alien Arcadium" || max_ammo >= 27 && round_update_int > 27 && map !== "Alien Arcadium") {
-            ChatLib.chat(`&3[&bMicu&3]&r No more power up. We are reaching the end of the ${map}`)
-          } else {
-            ChatLib.chat(`&3[&bMicu&3]&r Next power up round: ${poweruptext}`)
-            if (Settings.notify_next_power_up_chat) { ChatLib.command(`pc [Micu] Next power up round: ${poweruptext.removeFormatting()}`) }
-          }
-        }
+      if (round_update_int >= 2) resetgoldcounter()
       if (map === "Alien Arcadium") {
-        if (Settings.corners_options_optional) {
-          corners_optional_round.forEach((round) => {
-            if (round_update_int == round) {
-              corners_optional_text = `| Optional: ${corners_spot_optional[round]}`
-            }})
-        }
         if (Settings.next_round_camp) {
           corners_spot_round.forEach((round) => {
             if (round_update_int == round) {
-              ChatLib.chat(`&3[&bMicu&3]&r Corner Spot: ${Settings.corners_options == 0 ? corners_spot_safest[round] : undefined || Settings.corners_options == 1 ? corners_spot_fastest[round] : undefined} ${round_update_int > 48 && Settings.corners_options_optional || round_update_int !== 59 && Settings.corners_options_optional ? corners_optional_text : ""}`)
-              if (Settings.camp_spot_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Corner Spot: ${Settings.corners_options == 0 ? corners_spot_safest[round] : undefined || Settings.corners_options == 1 ? corners_spot_fastest[round] : undefined} ${round_update_int > 48 && Settings.corners_options_optional || round_update_int !== 59 && Settings.corners_options_optional ? corners_optional_text : ""}`) }, 1000) }
+              ChatLib.chat(`&3[&bMicu&3]&r Corner Spot: ${Settings.corners_options == 0 ? corners_spot_safest[round] : undefined || Settings.corners_options == 1 ? corners_spot_fastest[round] : undefined}}`)
+              if (Settings.camp_spot_chat) ChatLib.command(`pc [Micu] Corner Spot: ${Settings.corners_options == 0 ? corners_spot_safest[round] : undefined || Settings.corners_options == 1 ? corners_spot_fastest[round] : undefined}`)
             }})
         }
         if (Settings.notify_grow) {
-        grow_round.forEach((gr) => {
-            if (round_update_int == gr && dg_check !== true && grow_cancel !== true) {
-            ChatLib.chat(`&3[&bMicu&3]&r&a&l Grow Round Detected! &r&a${grow_round_short[gr]}`)
-            if (Settings.notify_grow_chat) { setTimeout(() => { ChatLib.command(`pc [Micu] Grow Round! ${grow_round_strat[gr]}`) }, 1000) }
-                CCOUNT = shoot_time[gr];
-                t = setTimeout(countdown, 1000);
-            } else { dg_check = false; cdreset(); grow_cancel = false; }})
+          grow_round.forEach((grow) => {
+              if (round_update_int == grow && dg_check !== true && grow_cancel !== true) {
+                  ChatLib.chat(`&3[&bMicu&3]&r&a&l Grow Round Detected! &r&a${grow_round_short[grow]}`)
+                  count = shoot_time[grow];
+                  t = setTimeout(countdown, 1000);
+                  if (Settings.notify_grow_chat) ChatLib.command(`pc [Micu] Grow Round! ${grow_round_strat[grow]}`);
+              } else { dg_check = false; grow_cancel = false; }
+            })
         }
         if (Settings.o1_alert) o1_inc.forEach((o1) => { if (round_update_int == o1) { setTimeout(o1Inc, o1_spawn_delay[o1]) } })
         if (Settings.giant_alert) giant_spawn.forEach((delay) => { if (round_update_int == delay) { setTimeout(GiantSpawn, giant_spawn_delay[delay]) } })
@@ -650,107 +559,6 @@ register("step", () => {
         }
       }
     }
-
-    let new_max = false;
-    if (max_pat == 1) {
-      new_max = false;
-      max_pat1.forEach((max) => {
-        if (!new_max) {
-          if (round_update_int <= max) {
-            max_ammo = max;
-            new_max = true;
-          }
-        }
-      });
-      new_max = false;
-    }
-    if (max_pat == 2) {
-      new_max = false;
-      max_pat2.forEach((max) => {
-        if (!new_max) {
-          if (round_update_int <= max) {
-            max_ammo = max;
-            new_max = true;
-          }
-        }
-      });
-      new_max = false;
-    }
-    let new_insta = false;
-    if (insta_pat == 1) {
-      new_insta = false;
-      insta_pat1.forEach((insta) => {
-        if (!new_insta) {
-          if (round_update_int <= insta) {
-            insta_kill = insta;
-            new_insta = true;
-          }
-        }
-      });
-      new_insta = false;
-    }
-    if (insta_pat == 2) {
-      new_insta = false;
-      insta_pat2.forEach((insta) => {
-        if (!new_insta) {
-          if (round_update_int <= insta) {
-            insta_kill = insta;
-            new_insta = true;
-          }
-        }
-      });
-      new_insta = false;
-    }
-    let new_ss = false;
-    if (ss_pat == 1) {
-      new_ss = false;
-      ss_pat1.forEach((ss) => {
-        if (!new_ss) {
-          if (round_update_int <= ss) {
-            shopping_spree = ss;
-            new_ss = true;
-          }
-        }
-      });
-      new_ss = false;
-    }
-    if (ss_pat == 2) {
-      new_ss = false;
-      ss_pat2.forEach((ss) => {
-        if (!new_ss) {
-          if (round_update_int <= ss) {
-            shopping_spree = ss;
-            new_ss = true;
-          }
-        }
-      });
-      new_ss = false;
-    }
-    if (ss_pat == 3) {
-      new_ss = false;
-      ss_pat3.forEach((ss) => {
-        if (!new_ss) {
-          if (round_update_int <= ss) {
-            shopping_spree = ss;
-            new_ss = true;
-          }
-        }
-      });
-      new_ss = false;
-    }
-  
-  poweruptext = textmax + textinsta + textspree
-
-  if (insta_kill !== 0) textinsta = `&cInsta&r: ${insta_kill} `
-  if (insta_kill == 21 && round_update_int >= 21 || insta_kill == 23 && round_update_int >= 23) textinsta = ""
-
-  if (max_ammo !== 0) textmax = `&9Max&r: ${max_ammo} `
-  if (max_ammo === 96 && round_update_int > 96 && map === "Alien Arcadium" || max_ammo === 102 && round_update_int > 102 && map === "Alien Arcadium") textmax = ""
-  else if (max_ammo === 26 && round_update_int > 26 && map !== "Alien Arcadium" || max_ammo === 27 && round_update_int > 27 && map !== "Alien Arcadium") textmax = ""
-
-  if (shopping_spree !== 0) textspree = `&5Spree&r: ${shopping_spree} `
-  if (shopping_spree === 95 && round_update_int > 95 || shopping_spree === 96 && round_update_int > 96 || shopping_spree === 97 && round_update_int > 97) textspree = ""
-
 }).setFps(1);
 
 register('renderOverlay', render);
@@ -758,155 +566,76 @@ register('renderOverlay', render);
 register("chat", (chat, event) => {
   chat = String(ChatLib.getChatMessage(event, true));
 
-  if (chat.includes("power up")) {return;}
-  if (chat.includes("&r&eactivated &r&9&lMax Ammo&r&e!&r")) {
-    max_pat1.forEach((max) => {
-      if (max == round_update_int) {
-        if (max_pat == 0) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r &9Max Ammo&r pattern 1 detected.");}
-          max_pat = 1;
-        } else if (max_pat == 2) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r&f Max pattern did not match up! Please use /maxpat <1/2> to specify the pattern manually. (use pattern 1 for 2, 5, 8, 12, '1s or '6s, and use pattern 2 for 3, 6, 9, 13, '2s or '7s)");}
-        }
-      }
-    });
-    max_pat2.forEach((max) => {
-      if (max == round_update_int) {
-        if (max_pat == 0) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r &9Max Ammo&r pattern 2 detected.");}
-          max_pat = 2;
-        } else if (max_pat == 1) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r&f Max Ammo pattern did not match up! Please use /maxpat <1/2> to specify the pattern manually. (use pattern 1 for 2, 5, 8, 12, '1s or '6s, and use pattern 2 for 3, 6, 9, 13, '2s or '7s)");}
-        }
-      }
-    });
-    if (max_pat == 0) {
-      ChatLib.chat("&3[&bMicu&3]&r&f Max Ammo pattern unknown. Use /maxpat <1/2> to specify the pattern manually. The pattern will be automatically redetected when the next Max Ammo is obtained. (use pattern 1 for 2, 5, 8, 12, '1s or '6s, and use pattern 2 for 3, 6, 9, 13, '2s or '7s)");
-    }
-  }
-  if (chat.includes("&r&eactivated &r&c&lInsta Kill&r&e for &r&c10s&r&e!&r")) {
-    insta_pat1.forEach((insta) => {
-      if (insta == round_update_int) {
-        if (insta_pat == 0) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r &cInsta Kill&r pattern 1 detected.");}
-          insta_pat = 1;
-        } else if (insta_pat == 2) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r&f Insta Kill pattern did not match up! Please use /instapat <1/2> to specify the pattern manually. (use pattern 1 for 2, 5, 8, 11, 14, 17, 20, 23, and use pattern 2 for 3, 6, 9, 12, 15, 18, 21)");}
-        }
-      }
-    });
-    insta_pat2.forEach((insta) => {
-      if (insta == round_update_int) {
-        if (insta_pat == 0) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r &cInsta Kill&r pattern 2 detected.");}
-          insta_pat = 2;
-        } else if (insta_pat == 1) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r&f Insta Kill pattern did not match up! Please use /instapat <1/2> to specify the pattern manually. (use pattern 1 for 2, 5, 8, 11, 14, 17, 20, 23, and use pattern 2 for 3, 6, 9, 12, 15, 18, 21)");}
-        }
-      }
-    });
-    if (insta_pat == 0) {
-      ChatLib.chat("&3[&bMicu&3]&r&f Insta Kill pattern unknown. Use /instapat <1/2> to specify the pattern manually. The pattern will be automatically redetected when the next Insta Kill is obtained. (use pattern 1 for 2, 5, 8, 11, 14, 17, 20, 23, and use pattern 2 for 3, 6, 9, 12, 15, 18, 21)");
-    }
-  }
-  if (chat.includes("&r&eactivated &r&5&lShopping Spree&r&e for &r&c20s&r&e!&r")) {
-    ss_pat1.forEach((ss) => {
-      if (ss == round_update_int) {
-        if (ss_pat == 0) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r &5Shopping Spree&r pattern 1 detected.");}
-          ss_pat = 1;
-        } else if (ss_pat == 2 || ss_pat == 3) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r&f Shopping Spree pattern did not match up! Please use /sspat <1/2/3> to specify the pattern manually. (use pattern 1 for 5, 15, 45, '5s, use pattern 2 for 6, '6s (except 56) and use pattern 3 for 7, '7s (except 57))");}
-        }
-      }
-    });
-    ss_pat2.forEach((ss) => {
-      if (ss == round_update_int) {
-        if (ss_pat == 0) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r &5Shopping Spree&r pattern 2 detected.");}
-          ss_pat = 2;
-        } else if (ss_pat == 1 || ss_pat == 3) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r&f Shopping Spree pattern did not match up! Please use /sspat <1/2/3> to specify the pattern manually. (use pattern 1 for 5, 15, 45, '5s, use pattern 2 for 6, '6s (except 56) and use pattern 3 for 7, '7s (except 57))");}
-        }
-      }
-    });
-    ss_pat3.forEach((ss) => {
-      if (ss == round_update_int) {
-        if (ss_pat == 0) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r &5Shopping Spree&r pattern 3 detected.");}
-          ss_pat = 3;
-        } else if (ss_pat == 1 || ss_pat == 2) {
-          if (Settings.powerup_ann) {ChatLib.chat("&3[&bMicu&3]&r&f Shopping Spree pattern did not match up! Please use /sspat <1/2/3> to specify the pattern manually. (use pattern 1 for 5, 15, 45, '5s, use pattern 2 for 6, '6s (except 56) and use pattern 3 for 7, '7s (except 57))");}
-        }
-      }
-    });
-    if (ss_pat == 0) {
-      ChatLib.chat("&3[&bMicu&3]&r&f Shopping Spree pattern unknown. Use /sspat <1/2/3> to specify the pattern manually. The pattern will be automatically redetected when the next Shopping Spree is obtained. (use pattern 1 for 5, 15, 45, '5s, use pattern 2 for 6, '6s (except 56) and use pattern 3 for 7, '7s (except 57))");
-    }
-  }
+  if (chat.includes("&r&6+4 Gold")) gold_earn_total += 4;
+  if (chat.includes("&r&6+5 Gold")) gold_earn_total += 5;
+  if (chat.includes("&r&6+6 Gold")) gold_earn_total += 6;
+  if (chat.includes("&r&6+7 Gold")) gold_earn_total += 7;
+  if (chat.includes("&r&6+8 Gold")) gold_earn_total += 8;
+  if (chat.includes("&r&6+9 Gold")) gold_earn_total += 9;
+  if (chat.includes("&r&6+10 Gold")) gold_earn_total += 10;
+  if (chat.includes("&r&6+11 Gold")) gold_earn_total += 11;
+  if (chat.includes("&r&6+12 Gold")) gold_earn_total += 12;
+  if (chat.includes("&r&6+13 Gold")) gold_earn_total += 13;
+  if (chat.includes("&r&6+14 Gold")) gold_earn_total += 14;
+  if (chat.includes("&r&6+15 Gold")) gold_earn_total += 15;
+  if (chat.includes("&r&6+16 Gold")) gold_earn_total += 16;
+  if (chat.includes("&r&6+17 Gold")) gold_earn_total += 17;
+  if (chat.includes("&r&6+18 Gold")) gold_earn_total += 18;
+  if (chat.includes("&r&6+19 Gold")) gold_earn_total += 19;
+  if (chat.includes("&r&6+20 Gold")) gold_earn_total += 20;
+  if (chat.includes("&r&6+24 Gold")) gold_earn_total += 24;
+  if (chat.includes("&r&6+30 Gold")) gold_earn_total += 30;
+  if (chat.includes("&r&6+40 Gold")) gold_earn_total += 40;
+  if (chat.includes("&r&6+50 Gold")) gold_earn_total += 50;
+  if (chat.includes("&r&6+60 Gold")) gold_earn_total += 60;
+  if (chat.includes("&r&6+100 Gold")) gold_earn_total += 100;
+  if (chat.includes("&r&6+200 Gold")) gold_earn_total += 200;
+  if (chat.includes("&r&6+400 Gold")) gold_earn_total += 400;
+  if (chat.includes("&r&6+500 Gold")) gold_earn_total += 500;
+  if (chat.includes("&r&6+1000 Gold")) gold_earn_total += 1000;
+
+  if (chat.includes("&r&6+4 Gold")) gold_earn_total_games += 4;
+  if (chat.includes("&r&6+5 Gold")) gold_earn_total_games += 5;
+  if (chat.includes("&r&6+6 Gold")) gold_earn_total_games += 6;
+  if (chat.includes("&r&6+7 Gold")) gold_earn_total_games += 7;
+  if (chat.includes("&r&6+8 Gold")) gold_earn_total_games += 8;
+  if (chat.includes("&r&6+9 Gold")) gold_earn_total_games += 9;
+  if (chat.includes("&r&6+10 Gold")) gold_earn_total_games += 10;
+  if (chat.includes("&r&6+11 Gold")) gold_earn_total_games += 11;
+  if (chat.includes("&r&6+12 Gold")) gold_earn_total_games += 12;
+  if (chat.includes("&r&6+13 Gold")) gold_earn_total_games += 13;
+  if (chat.includes("&r&6+14 Gold")) gold_earn_total_games += 14;
+  if (chat.includes("&r&6+15 Gold")) gold_earn_total_games += 15;
+  if (chat.includes("&r&6+16 Gold")) gold_earn_total_games += 16;
+  if (chat.includes("&r&6+17 Gold")) gold_earn_total_games += 17;
+  if (chat.includes("&r&6+18 Gold")) gold_earn_total_games += 18;
+  if (chat.includes("&r&6+19 Gold")) gold_earn_total_games += 19;
+  if (chat.includes("&r&6+20 Gold")) gold_earn_total_games += 20;
+  if (chat.includes("&r&6+24 Gold")) gold_earn_total_games += 24;
+  if (chat.includes("&r&6+30 Gold")) gold_earn_total_games += 30;
+  if (chat.includes("&r&6+40 Gold")) gold_earn_total_games += 40;
+  if (chat.includes("&r&6+50 Gold")) gold_earn_total_games += 50;
+  if (chat.includes("&r&6+60 Gold")) gold_earn_total_games += 60;
+  if (chat.includes("&r&6+100 Gold")) gold_earn_total_games += 100;
+  if (chat.includes("&r&6+200 Gold")) gold_earn_total_games += 200;
+  if (chat.includes("&r&6+400 Gold")) gold_earn_total_games += 400;
+  if (chat.includes("&r&6+500 Gold")) gold_earn_total_games += 500;
+  if (chat.includes("&r&6+1000 Gold")) gold_earn_total_games += 1000;
+        
+  if (chat.includes("&r&eactivated &r&6&lDouble Gold&r&e for &r&c30s&r&e!&r")) panchodg++
+  if (chat.includes("&r&eactivated &r&9&lCarpenter&r&e!&r")) carpenter++
+
   if (chatlowcase !== chat) {
       chatlowcase = chat
-      if (chatlowcase.includes("&r&eactivated &r&6&lDouble Gold&r&e for &r&c30s&r&e!&r")) {
-        grow_round.forEach((dg) => {
-          if (round_update_int == dg && map === "Alien Arcadium") { CCOUNT = 0; cdreset(); dg_check = true }})
+      if (chat.includes("&r&eactivated &r&6&lDouble Gold&r&e for &r&c30s&r&e!&r")) {
+        grow_round.forEach((dg) => {if (round_update_int == dg && map === "Alien Arcadium") { cdreset(); dg_check = true }})
       }
       if (chat.includes("&r&eactivated &r&c&lInsta Kill&r&e for &r&c10s&r&e!&r")) {
-        grow_round.forEach((insta) => {
-        if (round_update_int == insta && map === "Alien Arcadium") { InstaTouch() }})
+        grow_round.forEach((insta) => {if (round_update_int == insta && map === "Alien Arcadium") { InstaTouch() }})
       }
+      if (chat.includes("&r&eactivated &r&6&lBonus Gold&r&e!&r")) have_bonus_gold = true;
     }
 }).setCriteria("${chat}");
-
-register("command", (pattern) => {
-  if (pattern == 1) {
-    max_pat = 1;
-    ChatLib.chat("&3[&bMicu&3]&r Set &9Max Ammo&r pattern to 1");
-  } else if (pattern == 2) {
-    max_pat = 2;
-    ChatLib.chat("&3[&bMicu&3]&r Set &9Max Ammo&r pattern to 2");
-  } else if (pattern == 0) {
-    max_ammo = 0;
-    max_pat = 0;
-    ChatLib.chat("&3[&bMicu&3]&r Reset &9Max Ammo&r pattern.");
-  } else {
-    ChatLib.chat("&3[&bMicu&3]&r&f To specify max pattern manually, use 1 or 2 as argument. (use pattern 1 for 2, 5, 8, 12, '1s or '6s, and use pattern 2 for 3, 6, 9, 13, '2s or '7s)");
-  }
-}).setName("maxpat")
-
-register("command", (pattern) => {
-  if (pattern == 1) {
-    insta_pat = 1;
-    ChatLib.chat("&3[&bMicu&3]&r Set &cInsta Kill&r pattern to 1");
-  } else if (pattern == 2) {
-    insta_pat = 2;
-    ChatLib.chat("&3[&bMicu&3]&r Set &cInsta Kill&r pattern to 2");
-  } else if (pattern == 0) {
-    insta_kill = 0;
-    insta_pat = 0;
-    ChatLib.chat("&3[&bMicu&3]&r Reset &cInsta Kill&r pattern.");
-  } else {
-    ChatLib.chat("&3[&bMicu&3]&r&f To specify insta pattern manually, use 1 or 2 as argument. (use pattern 1 for 2, 5, 8, 11, 14, 17, 20, 23, and use pattern 2 for 3, 6, 9, 12, 15, 18, 21)");
-  }
-}).setName("instapat")
-
-register("command", (pattern) => {
-  if (pattern == 1) {
-    ss_pat = 1;
-    ChatLib.chat("&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 1");
-  } else if (pattern == 2) {
-    ss_pat = 2;
-    ChatLib.chat("&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 2");
-  } else if (pattern == 3) {
-    ss_pat = 3;
-    ChatLib.chat("&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 3");
-  } else if (pattern == 0) {
-    shopping_spree = 0;
-    ss_pat = 0;
-    ChatLib.chat("&3[&bMicu&3]&r Reset Shopping Spree pattern.");
-  } else {
-    ChatLib.chat("&3[&bMicu&3]&r&f To specify spree pattern manually, use 1 or 2 or 3 as argument. (use pattern 1 for 5, 15, 45, '5s, use pattern 2 for 6, '6s (except 56) and use pattern 3 for 7, '7s (except 57))");
-  }
-}).setName("sspat")
 
 register("command", (setmap) => {
   if (setmap == "aa") {
@@ -927,65 +656,60 @@ register("command", (setmap) => {
 }).setName("setmap")
 
 register("command", () => {
-    if (map === "Alien Arcadium") {
+    if (map === "Alien Arcadium" && in_zombies) {
       grow_round.forEach((dg) => {
         if (round_update_int == dg) { 
-          if (CCOUNT == 0) {
+          if (count == 0) {
             if (grow_cancel == true) ChatLib.chat(`&3[&bMicu&3]&r You already cancelled the grow.`)
             else ChatLib.chat(`&3[&bMicu&3]&r Timer already finished.`)
           } else {
             nogrow()
             ChatLib.chat(`&3[&bMicu&3]&r &cCancelled! No grow!`)
+            if (Settings.notify_grow_chat) ChatLib.command(`pc [Micu] Cancelled! No grow!`)
           }
         } 
-      // else { ChatLib.chat(`&3[&bMicu&3]&r Not in grow round right now.`); }
       })
     }
 }).setName("micunogrow")
 
-register("chat", (name) => {
-    if (map === "Alien Arcadium" && Settings.no_grow_cmds) {
-      grow_round.forEach((dg) => {
-        if (round_update_int == dg) { 
-          if (CCOUNT == 0) {
-            if (Settings.notify_grow_chat) {
-              if (grow_cancel == true) { ChatLib.command(`pc [Micu] ${stripRank(name)}. You already cancelled the grow.`); }
-              else { ChatLib.command(`pc [Micu] ${stripRank(name)}. Timer already finished.`) }
-            }
-          } else {
-            nogrow()
-            ChatLib.chat(`&3[&bMicu&3]&r &cCancelled! No grow! (by ${stripRank(name)})`)
-            if (Settings.notify_grow_chat) ChatLib.command(`pc [Micu] Cancelled by ${stripRank(name)}! No grow!`)
-          }
+register("chat", (player, message, event) => {
+    if (Settings.zombiescmd && in_zombies && message.slice(0, 1)=="!") {
+        switch (message) {
+            case "!gold":
+                ChatLib.command(`pc [Micu] Total gold earned this game: ${gold_earn_total_games}`)
+                break;
+            case "!dg":
+                ChatLib.command(`pc [Micu] Total Double Gold this game: ${panchodg}`)
+                break;
+            case "!carp": 
+                if (map === "Alien Arcadium") ChatLib.command(`pc [Micu] Total Carpenter this game: ${carpenter}`)
+                break;
+            case "!bg": 
+                if (map === "Alien Arcadium") ChatLib.command(`pc [Micu] Have Bonus Gold this game: ${have_bonus_gold}`)
+                break;
+            case "!ng":
+                if (map === "Alien Arcadium") {
+                  grow_round.forEach((dg) => {
+                    if (round_update_int == dg) { 
+                      if (count == 0) {
+                        if (Settings.notify_grow_chat) {
+                          if (grow_cancel == true) { ChatLib.command(`pc [Micu] ${stripRank(player)}. You already cancelled the grow.`); }
+                          else { ChatLib.command(`pc [Micu] ${stripRank(player)}. Timer already finished.`) }
+                        }
+                      } else {
+                        nogrow()
+                        ChatLib.chat(`&3[&bMicu&3]&r &cCancelled! No grow! (by ${stripRank(player)})`)
+                        if (Settings.notify_grow_chat) ChatLib.command(`pc [Micu] Cancelled by ${stripRank(player)}! No grow!`)
+                      }
+                    }
+                  })
+                }
+                break;
+            default:
+                break;
         }
-        // else { ChatLib.command(`pc [Micu] ${stripRank(name)}. Not in grow round right now.`); }
-      })
     }
-}).setCriteria("Party > ${name}: !ng");
-
-register("chat", (name) => {
-    if (Settings.powerup_cmds) max_pat = 1; ChatLib.chat(`&3[&bMicu&3]&r Set &9Max Ammo&r pattern to 1 (${stripRank(name)})`);
-}).setCriteria("Party > ${name}: !max 1");
-register("chat", (name) => {
-    if (Settings.powerup_cmds) max_pat = 2; ChatLib.chat(`&3[&bMicu&3]&r Set &9Max Ammo&r pattern to 2 (${stripRank(name)})`);
-}).setCriteria("Party > ${name}: !max 2");
-
-register("chat", (name) => {
-    if (Settings.powerup_cmds) insta_pat = 1; ChatLib.chat(`&3[&bMicu&3]&r Set &cInsta Kill&r pattern to 1 (${stripRank(name)})`);
-}).setCriteria("Party > ${name}: !insta 1");
-register("chat", (name) => {
-    if (Settings.powerup_cmds) insta_pat = 2; ChatLib.chat(`&3[&bMicu&3]&r Set &cInsta Kill&r pattern to 2 (${stripRank(name)})`);
-}).setCriteria("Party > ${name}: !insta 2");
-
-register("chat", (name) => {
-    if (Settings.powerup_cmds) ss_pat = 1; ChatLib.chat(`&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 1 (${stripRank(name)})`);
-}).setCriteria("Party > ${name}: !ss 1");
-register("chat", (name) => {
-    if (Settings.powerup_cmds) ss_pat = 2; ChatLib.chat(`&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 2 (${stripRank(name)})`);
-}).setCriteria("Party > ${name}: !ss 2");
-register("chat", (name) => {
-    if (Settings.powerup_cmds) ss_pat = 3; ChatLib.chat(`&3[&bMicu&3]&r Set &5Shopping Spree&r pattern to 3 (${stripRank(name)})`);
-}).setCriteria("Party > ${name}: !ss 3");
+}).setCriteria("&r&9Party &8> ${player}&f: &r${message}&r")
 
 // Round Test
 // register("command", (debuground) => {
@@ -1003,6 +727,11 @@ register("chat", (name) => {
 //     }
 // }).setName("micuround")
 
+function resetgoldcounter() {
+  ChatLib.chat(`&3[&bMicu&3]&r Round ${round_update_int - 1} Gold Earned: &6+${gold_earn_total} Gold&r`)
+  gold_earn_total = 0
+}
+
 function countdown() {
     if (count == 0) {
         TextTMacro()
@@ -1013,35 +742,38 @@ function countdown() {
 }
 
 function cdreset() {
-    count = CCOUNT;
+    count = 0;
 }
 
 function TextTMacro() {
-  if (dg_check == true) {
-      show_shootTdg_alert = true;
-      World.playSound("note.pling", 2, 1)
-      setTimeout(() => {
-      show_shootTdg_alert = false;
-      }, 3000)
-    ChatLib.chat("&3[&bMicu&3]&r&e Double Gold is activated. You can shoot now!")
-    if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Double Gold is activated. Shoot now!')
-  } else {
-    if (grow_cancel !== true) {
-      show_shootT_alert = true;
-      World.playSound("note.pling", 2, 3)
-      setTimeout(() => {
-        show_shootT_alert = false;
-      }, 3000)
-      ChatLib.chat("&3[&bMicu&3]&r&e You can shoot now!")
-      if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Shoot now!')
+  grow_round.forEach((grow) => {
+    if (round_update_int == grow) {
+      if (dg_check == true) {
+          show_shootTdg_alert = true;
+          World.playSound("note.pling", 2, 1)
+          setTimeout(() => {
+          show_shootTdg_alert = false;
+          }, 3000)
+        ChatLib.chat("&3[&bMicu&3]&r&e Double Gold is activated. You can shoot now!")
+        if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Double Gold is activated. Shoot now!')
+      } else {
+        if (grow_cancel !== true) {
+          show_shootT_alert = true;
+          World.playSound("note.pling", 2, 3)
+          setTimeout(() => {
+            show_shootT_alert = false;
+          }, 3000)
+          ChatLib.chat("&3[&bMicu&3]&r&e You can shoot now!")
+          if (Settings.notify_grow_chat) ChatLib.command('pc [Micu] Shoot now!')
+        }
+      }
     }
-  }
+  })
 }
 
 function nogrow() {
   World.playSound("note.pling", 1, 2)
   grow_cancel = true;
-  CCOUNT = 0;
   cdreset();
 }
 

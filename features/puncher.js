@@ -7,6 +7,7 @@ let imageHeight
 let shouldDrawImage = false
 let timeoutId
 let map;
+let puncher_count = 0;
 
 register("step", () => {
     in_zombies = Scoreboard.getTitle().removeFormatting().toLowerCase().includes("zombies") ? true : false;
@@ -24,6 +25,10 @@ try {
     ChatLib.chat(":/");
 }
 
+register("worldUnload", () => {
+    puncher_count = 0;
+})
+
 register("renderOverlay", () => {
     if (!shouldDrawImage || !image) return;
     const x = Renderer.screen.getWidth() /2 - imageWidth /2
@@ -38,9 +43,10 @@ register("chat", (chat, event) => {
     chat = String(ChatLib.getChatMessage(event, true))
     if (Settings.puncher_alert && in_zombies && map === "Alien Arcadium") {
         if (chat.includes("&r&7You found &r&6The Puncher &r&7in the &r&5Lucky Chest&r&7! You have &r&c10s &r&7to claim it before it disappears!&r")) {
+            puncher_count++
             shouldDrawImage = true;
             new Sound({ source: "puncher.ogg" })?.play();
-            if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] Oi Cai DissCorMess`) }
+            if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] Oi Cai DissCorMess (Puncher Count: ${puncher_count})`) }
             if (timeoutId) clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
                 shouldDrawImage = false;
@@ -51,9 +57,10 @@ register("chat", (chat, event) => {
 
 register("chat", (name) => {
     if (Settings.puncher_alert && in_zombies && map === "Alien Arcadium") {
+        puncher_count++
         new Sound({ source: "puncher.ogg" })?.play();
         () => Settings.puncher_alert
-        if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] WASTED. ${name} rolled The Puncher!`) }
+        if (Settings.puncher_chat_alert) { ChatLib.command(`pc [Micu] WASTED. ${name} rolled The Puncher! (Puncher Count: ${puncher_count})`) }
     }
 }).setCriteria("${name} found The Puncher in the Lucky Chest!");
 

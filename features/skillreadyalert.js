@@ -16,7 +16,7 @@ register("step", () => {
     lrod = item.indexOf(369)
     heal = item.indexOf(322)
     if (!alerting) {
-      if (lrod !== -1) {
+      if (item && lrod !== -1) {
         show_skill_alert = true;
         World.playSound("note.pling", 2, 3)
         setTimeout(() => {
@@ -30,7 +30,7 @@ register("step", () => {
       alerting = false;
     }
     if (!alerting2) {
-      if (heal !== -1) {
+      if (item && heal !== -1) {
         show_skill2_alert = true;
         World.playSound("note.pling", 2, 3)
         setTimeout(() => {
